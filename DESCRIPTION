@@ -1,20 +1,20 @@
 Package: gerda
 Title: German Election Database (GERDA)
-Version: 0.1.0
+Version: 0.0.0.9000
 Authors@R: 
-    person("Hanno", "Hilbig", , "hhilbig@ucdavis.ed", role = c("aut", "cre"),
+    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: Provides comprehensive datasets of local, state, and federal 
     election results in Germany. The package includes data on turnout and 
     vote shares for major parties across different levels of government. 
     It offers geographically harmonized datasets that account for changes 
-    in municipal boundaries and mail-in voting districts, facilitating 
-    research on electoral behavior, representation, and political 
-    responsiveness.
+    in municipal boundaries and mail-in voting districts.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Depends: 
+    R (>= 2.10)
 Imports: 
     readr,
     dplyr,
