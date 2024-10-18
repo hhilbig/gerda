@@ -2,4 +2,6 @@
 
 export(file_name)
 export(gerda_data_list)
-import(tidyverse)
+import(dplyr)
+import(readr)
+import(stringdist)

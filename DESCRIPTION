@@ -16,9 +16,9 @@ RoxygenNote: 7.3.2
 Depends: 
     R (>= 2.10)
 Imports: 
-    readr,
-    dplyr,
-    stringdist
+    stringdist, 
+    dplyr, 
+    readr
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
