@@ -1,6 +1,6 @@
 #' Load GERDA Data
 #'
-#' This function loads GERDA data .
+#' This function loads GERDA data from a web source.
 #'
 #' @param file_name A character string specifying the name of the file to load. For a list of available data, see \code{\link{gerda_data_list}}.
 #' @param verbose A logical value indicating whether to print additional messages to the console. Default is FALSE.

@@ -1,2 +1,5 @@
 ^gerda\.Rproj$
 ^\.Rproj\.user$
+^excluded_code/
+^data_not_used/
+^LICENSE\.md$
