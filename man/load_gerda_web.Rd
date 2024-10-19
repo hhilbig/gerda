@@ -4,12 +4,14 @@
 \alias{load_gerda_web}
 \title{Load GERDA Data}
 \usage{
-load_gerda_web(file_name, verbose = FALSE)
+load_gerda_web(file_name, verbose = FALSE, file_format = "rds")
 }
 \arguments{
 \item{file_name}{A character string specifying the name of the file to load. For a list of available data, see \code{\link{gerda_data_list}}.}
 
 \item{verbose}{A logical value indicating whether to print additional messages to the console. Default is FALSE.}
+
+\item{file_format}{A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".}
 }
 \value{
 A tibble containing the loaded data.
@@ -19,7 +21,7 @@ This function loads GERDA data from a web source.
 }
 \examples{
 \dontrun{
-data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE)
+data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_format = "rds")
 }
 
 }
