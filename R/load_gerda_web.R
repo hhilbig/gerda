@@ -17,8 +17,6 @@
 #' @import readr
 #' @export
 
-file_name <- "municipal_harm"
-
 load_gerda_web <- function(file_name, verbose = FALSE) {
     # Load data dict
     data_dictionary <- structure(list(data_name = c(
