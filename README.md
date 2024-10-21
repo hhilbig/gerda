@@ -2,6 +2,22 @@
 
 This package provides functions to access and work with GERDA datasets.
 
+**Note: This package is currently a work in progress. Comments and suggestions are welcome -- please send to <hhilbig@ucdavis.edu>.**
+
+## Installation
+
+You can install the development version of GERDA from GitHub using the `devtools` package:
+
+```R
+# Install devtools if you haven't already
+if (!requireNamespace("devtools", quietly = TRUE)) {
+  install.packages("devtools")
+}
+
+# Install GERDA
+devtools::install_github("hhilbig/gerda")
+```
+
 ## Main Functions
 
 - **`gerda_data_list()`**: This function lists all available GERDA datasets along with their descriptions, returning the data as a tibble.
@@ -16,6 +32,9 @@ This package provides functions to access and work with GERDA datasets.
 ## Usage Examples
 
 ```R
+# Load the package
+library(gerda)
+
 # List available datasets
 available_data <- gerda_data_list()
 
@@ -26,3 +45,7 @@ data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_for
 ## Note
 
 For a complete list of available datasets and their descriptions, use the `gerda_data_list()` function.
+
+## Feedback
+
+As this package is a work in progress, we welcome feedback. Please send your comments to <hhilbig@ucdavis.edu> or open an issue on the GitHub repository.
