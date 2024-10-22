@@ -20,7 +20,11 @@ library(gerda)
 
 ## Overview
 
-The `gerda` package provides functions to access and work with GERDA datasets. This vignette will introduce you to the main functions of the package and demonstrate how to use them.
+The `gerda` package provides functions to access and work with GERDA datasets. The German Election Database (GERDA) provides a comprehensive dataset of local, state, and federal election results in Germany. The data is intended to facilitate research on electoral behavior, representation, and political responsiveness at multiple levels of government. All datasets include turnout and vote shares for all major parties. Moreover, GERDA contains geographically harmonized datasets that account for changes in municipal boundaries and mail-in voting districts.
+
+GERDA was compiled by Vincent Heddesheimer, Florian Sichart, Andreas Wiedemann and Hanno Hilbig.
+
+This vignette will introduce you to the main functions of the package and demonstrate how to use them.
 
 ## Available Datasets
 
