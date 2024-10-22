@@ -114,7 +114,7 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
 
     # Get the url
     url <- data_dictionary %>%
-        dplyr::filter(data_name == file_name) %>%
+        dplyr::filter(.data$data_name == file_name) %>%
         dplyr::pull(!!sym(paste0(file_format, "_url")))
 
     if (verbose) {

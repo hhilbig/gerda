@@ -4,3 +4,5 @@ excluded_code/**/*
 .Rproj.user
 data_not_used/**/*
 inst/doc
+/doc/
+/Meta/
