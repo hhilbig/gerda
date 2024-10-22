@@ -3,3 +3,4 @@ excluded_code/get_data_from_gerda.R
 excluded_code/**/*
 .Rproj.user
 data_not_used/**/*
+inst/doc

@@ -7,7 +7,7 @@
 gerda_data_list()
 }
 \value{
-A tibble listing the available GERDA data with descriptions.
+A tibble containing the available GERDA data with descriptions.
 }
 \description{
 This function lists the available GERDA data sets.

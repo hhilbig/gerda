@@ -1,0 +1,71 @@
+---
+title: "Introduction to gerda"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to gerda}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(gerda)
+```
+
+## Overview
+
+The `gerda` package provides functions to access and work with GERDA datasets. This vignette will introduce you to the main functions of the package and demonstrate how to use them.
+
+## Available Datasets
+
+To see a list of all available GERDA datasets, you can use the `gerda_data_list()` function:
+
+```{r}
+gerda_data_list()
+```
+
+This function displays a formatted table with the names and descriptions of all available datasets.
+
+## Loading Data
+
+The main function for loading GERDA data is `load_gerda_web()`. This function allows you to load a specific dataset from a web source. Here's an example of how to use it:
+
+```{r, eval=FALSE}
+# Load the municipal harmonized dataset
+municipal_harm_data <- load_gerda_web("municipal_harm", verbose = TRUE, file_format = "rds")
+```
+
+The `load_gerda_web()` function takes the following parameters:
+
+- `file_name`: The name of the dataset to load (as shown in the `gerda_data_list()` output)
+- `verbose`: If set to `TRUE`, it prints messages about the loading process (default is `FALSE`)
+- `file_format`: Specifies the format of the file to load, either "rds" or "csv" (default is "rds")
+
+## Example Workflow
+
+Here's an example of a typical workflow using the `gerda` package:
+
+1. List available datasets:
+
+```{r}
+gerda_data_list()
+```
+
+2. Load a dataset (in this case, the federal elections at the county level, harmonized):
+
+```{r, eval=FALSE}
+federal_cty_harm <- load_gerda_web("federal_cty_harm", verbose = TRUE)
+```
+
+
+## Conclusion
+
+The `gerda` package provides easy access to a wide range of German election and related data. By using the `gerda_data_list()` function to explore available datasets and `load_gerda_web()` to load them, you can quickly incorporate this data into your research or analysis projects.
+
+For more information or to provide feedback, please contact <hhilbig@ucdavis.edu> or visit the GitHub repository at https://github.com/hhilbig/gerda.

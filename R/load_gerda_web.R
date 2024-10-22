@@ -28,19 +28,19 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
             "cty_crosswalks", "ags_area_pop_emp", "cty_area_pop_emp"
         ),
         description = c(
-            "Local elections at the municipal level (1990–2020, unharmonized).",
-            "Local elections at the municipal level (1990–2020, harmonized).",
-            "State elections at the municipal level (2006–2019, unharmonized).",
-            "State elections at the municipal level (2006–2019, harmonized).",
-            "Federal elections at the municipal level (1980–2021, raw data).",
-            "Federal elections at the municipal level (1980–2021, unharmonized).",
-            "Federal elections at the municipal level (1990–2021, harmonized).",
-            "Federal elections at the county level (1953–2021, unharmonized).",
-            "Federal elections at the county level (1990–2021, harmonized).",
-            "Crosswalks for municipalities (1990–2021).",
-            "Crosswalks for counties (1990–2021).",
-            "Crosswalk covariates (area, population, employment) for municipalities (1990–2021).",
-            "Crosswalk covariates (area, population, employment) for counties (1990–2021)."
+            "Local elections at the municipal level (1990-2020, unharmonized).",
+            "Local elections at the municipal level (1990-2020, harmonized).",
+            "State elections at the municipal level (2006-2019, unharmonized).",
+            "State elections at the municipal level (2006-2019, harmonized).",
+            "Federal elections at the municipal level (1980-2021, raw data).",
+            "Federal elections at the municipal level (1980-2021, unharmonized).",
+            "Federal elections at the municipal level (1990-2021, harmonized).",
+            "Federal elections at the county level (1953-2021, unharmonized).",
+            "Federal elections at the county level (1990-2021, harmonized).",
+            "Crosswalks for municipalities (1990-2021).",
+            "Crosswalks for counties (1990-2021).",
+            "Crosswalk covariates (area, population, employment) for municipalities (1990-2021).",
+            "Crosswalk covariates (area, population, employment) for counties (1990-2021)."
         ),
         csv_url = c(
             "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/municipal_elections/final/municipal_unharm.csv?download=",
@@ -114,8 +114,8 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
 
     # Get the url
     url <- data_dictionary %>%
-        filter(data_name == file_name) %>%
-        pull(!!sym(paste0(file_format, "_url")))
+        dplyr::filter(data_name == file_name) %>%
+        dplyr::pull(!!sym(paste0(file_format, "_url")))
 
     if (verbose) {
         message("URL found: ", url)
