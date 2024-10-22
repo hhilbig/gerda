@@ -12,19 +12,19 @@
 gerda_data_list <- function() {
     data <- tibble::tribble(
         ~data_name,            ~description,
-        "municipal_unharm",    "Local elections at the municipal level (1990–2020, unharmonized).",
-        "municipal_harm",      "Local elections at the municipal level (1990–2020, harmonized).",
-        "state_unharm",        "State elections at the municipal level (2006–2019, unharmonized).",
-        "state_harm",          "State elections at the municipal level (2006–2019, harmonized).",
-        "federal_muni_raw",    "Federal elections at the municipal level (1980–2021, raw data).",
-        "federal_muni_unharm", "Federal elections at the municipal level (1980–2021, unharmonized).",
-        "federal_muni_harm",   "Federal elections at the municipal level (1990–2021, harmonized).",
-        "federal_cty_unharm",  "Federal elections at the county level (1953–2021, unharmonized).",
-        "federal_cty_harm",    "Federal elections at the county level (1990–2021, harmonized).",
-        "ags_crosswalks",      "Crosswalks for municipalities (1990–2021).",
-        "cty_crosswalks",      "Crosswalks for counties (1990–2021).",
-        "ags_area_pop_emp",    "Crosswalk covariates (area, population, employment) for municipalities (1990–2021).",
-        "cty_area_pop_emp",    "Crosswalk covariates (area, population, employment) for counties (1990–2021)."
+        "municipal_unharm",    "Local elections at the municipal level (1990-2020, unharmonized).",
+        "municipal_harm",      "Local elections at the municipal level (1990-2020, harmonized).",
+        "state_unharm",        "State elections at the municipal level (2006-2019, unharmonized).",
+        "state_harm",          "State elections at the municipal level (2006-2019, harmonized).",
+        "federal_muni_raw",    "Federal elections at the municipal level (1980-2021, raw data).",
+        "federal_muni_unharm", "Federal elections at the municipal level (1980-2021, unharmonized).",
+        "federal_muni_harm",   "Federal elections at the municipal level (1990-2021, harmonized).",
+        "federal_cty_unharm",  "Federal elections at the county level (1953-2021, unharmonized).",
+        "federal_cty_harm",    "Federal elections at the county level (1990-2021, harmonized).",
+        "ags_crosswalks",      "Crosswalks for municipalities (1990-2021).",
+        "cty_crosswalks",      "Crosswalks for counties (1990-2021).",
+        "ags_area_pop_emp",    "Crosswalk covariates (area, population, employment) for municipalities (1990-2021).",
+        "cty_area_pop_emp",    "Crosswalk covariates (area, population, employment) for counties (1990-2021)."
     )
 
     # Format the table for nice display in the terminal
