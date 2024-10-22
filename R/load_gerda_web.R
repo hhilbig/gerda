@@ -6,7 +6,7 @@
 #' @param verbose A logical value indicating whether to print additional messages to the console. Default is FALSE.
 #' @param file_format A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".
 #'
-#' @return A tibble containing the loaded data.
+#' @return A tibble containing the loaded data, or NULL if the data could not be loaded.
 #'
 #' @examples
 #' \dontrun{
@@ -94,13 +94,14 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
         }
 
         if (length(close_matches) > 0) {
-            stop(
+            warning(
                 "File name not found in data dictionary.\nDid you mean: \"",
                 close_matches[1], "\"?"
             )
         } else {
-            stop("File name not found in data dictionary")
+            warning("File name not found in data dictionary")
         }
+        return(NULL)
     }
 
     if (verbose) {
@@ -109,7 +110,8 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
 
     # Check if file_format is valid
     if (!file_format %in% c("csv", "rds")) {
-        stop("Invalid file_format. Must be either 'csv' or 'rds'.")
+        warning("Invalid file_format. Must be either 'csv' or 'rds'.")
+        return(NULL)
     }
 
     # Get the url
@@ -131,11 +133,12 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
             )
         },
         error = function(e) {
-            stop("Error loading data: ", e$message)
+            warning("Error loading data: ", e$message, "\nThe data may not be available or may have changed. Please contact the package maintainer.")
+            return(NULL)
         }
     )
 
-    if (verbose && !inherits(data, "try-error")) {
+    if (verbose && !is.null(data)) {
         message("Data loaded successfully")
     }
 
