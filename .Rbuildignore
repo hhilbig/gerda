@@ -3,3 +3,5 @@
 ^excluded_code/
 ^data_not_used/
 ^LICENSE\.md$
+^doc$
+^Meta$

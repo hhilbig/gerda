@@ -1,6 +1,6 @@
 Package: gerda
 Title: German Election Database (GERDA)
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Hilbig", "Hanno", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5849-9172"))
@@ -32,3 +32,4 @@ URL: https://github.com/hhilbig/gerda
 BugReports: https://github.com/hhilbig/gerda/issues
 LazyData: true
 VignetteBuilder: knitr
+Maintainer: Hanno Hilbig <hhilbig@ucdavis.edu>
