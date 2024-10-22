@@ -14,7 +14,7 @@ load_gerda_web(file_name, verbose = FALSE, file_format = "rds")
 \item{file_format}{A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".}
 }
 \value{
-A tibble containing the loaded data.
+A tibble containing the loaded data, or NULL if the data could not be loaded.
 }
 \description{
 This function loads GERDA data from a web source.
