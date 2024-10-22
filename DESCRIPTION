@@ -4,11 +4,11 @@ Version: 0.1.0
 Authors@R: 
     person("Hilbig", "Hanno", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5849-9172"))
-Description: Provides tools to download and process comprehensive datasets of local, 
+Description: Provides tools to download comprehensive datasets of local, 
     state, and federal election results in Germany from 1990 to 2021. The package 
     facilitates access to data on turnout, vote shares for major parties, and 
     demographic information across different levels of government (municipal, state, 
-    and federal). It offers functions to create geographically harmonized datasets 
+    and federal). It offers access to geographically harmonized datasets 
     that account for changes in municipal boundaries over time and incorporate 
     mail-in voting districts. Users can easily retrieve, clean, and standardize 
     German electoral data, making it ready for analysis.
