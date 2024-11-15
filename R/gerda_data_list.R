@@ -1,15 +1,18 @@
 #' List of GERDA Data
 #'
-#' This function lists the available GERDA data sets.
+#' This function lists the available GERDA data sets. The purpose of this function is to quickly provide a list of available data sets and their descriptions.
 #'
-#' @return A tibble containing the available GERDA data with descriptions.
+#' @return A tibble containing the available GERDA data with descriptions. When print_table = TRUE,
+#'         the function prints a formatted table to the console and invisibly returns the data tibble.
+#'         When print_table = FALSE, the function directly returns the data tibble.
+#' @param print_table A logical value indicating whether to print the table in the console (TRUE) or return the data as a tibble (FALSE). Default is TRUE.
 #'
 #' @examples
 #' gerda_data_list()
 #'
 #' @export
 #'
-gerda_data_list <- function() {
+gerda_data_list <- function(print_table = T) {
     data <- tibble::tribble(
         ~data_name,            ~description,
         "municipal_unharm",    "Local elections at the municipal level (1990-2020, unharmonized).",
@@ -27,9 +30,13 @@ gerda_data_list <- function() {
         "cty_area_pop_emp",    "Crosswalk covariates (area, population, employment) for counties (1990-2021)."
     )
 
-    # Format the table for nice display in the terminal
-    formatted_table <- knitr::kable(data, format = "pipe", align = c("l", "l"))
-
-    # Print the formatted table
-    cat(formatted_table, sep = "\n")
+    if (!print_table) {
+        return(data)
+    } else {
+        # Format the table for nice display in the terminal
+        formatted_table <- knitr::kable(data, format = "pipe", align = c("l", "l"))
+        # Print the formatted table
+        cat(formatted_table, sep = "\n")
+        invisible(data)
+    }
 }
