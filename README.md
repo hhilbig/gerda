@@ -20,14 +20,14 @@ devtools::install_github("hhilbig/gerda")
 
 ## Main Functions
 
-- **`gerda_data_list()`**: This function lists all available GERDA datasets along with their descriptions, printing a formatted table to the console.
+- **`gerda_data_list()`**: This function lists all available GERDA datasets along with their descriptions, printing a formatted table to the console using `knitr::kable()`.
 
 - **`load_gerda_web(file_name, verbose = FALSE, file_format = "rds")`**: This function loads a GERDA dataset from a web source. It takes the following parameters:
   - `file_name`: The name of the dataset to load (see `gerda_data_list()` for available options).
   - `verbose`: If set to `TRUE`, it prints messages about the loading process (default is `FALSE`).
   - `file_format`: Specifies the format of the file to load, either "rds" or "csv" (default is "rds").
 
-  The function checks for matches in the data dictionary, retrieves the corresponding data from a URL, and returns the dataset as a tibble.
+  The function includes fuzzy matching for file names and will suggest close matches if an exact match isn't found.
 
 ## Usage Examples
 
