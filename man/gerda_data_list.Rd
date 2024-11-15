@@ -4,13 +4,18 @@
 \alias{gerda_data_list}
 \title{List of GERDA Data}
 \usage{
-gerda_data_list()
+gerda_data_list(print_table = T)
+}
+\arguments{
+\item{print_table}{A logical value indicating whether to print the table in the console (TRUE) or return the data as a tibble (FALSE). Default is TRUE.}
 }
 \value{
-A tibble containing the available GERDA data with descriptions.
+A tibble containing the available GERDA data with descriptions. When print_table = TRUE,
+the function prints a formatted table to the console and invisibly returns the data tibble.
+When print_table = FALSE, the function directly returns the data tibble.
 }
 \description{
-This function lists the available GERDA data sets.
+This function lists the available GERDA data sets. The purpose of this function is to quickly provide a list of available data sets and their descriptions.
 }
 \examples{
 gerda_data_list()

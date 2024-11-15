@@ -11,7 +11,8 @@ Description: Provides tools to download comprehensive datasets of local,
     and federal). It offers access to geographically harmonized datasets 
     that account for changes in municipal boundaries over time and incorporate 
     mail-in voting districts. Users can easily retrieve, clean, and standardize 
-    German electoral data, making it ready for analysis.
+    German electoral data, making it ready for analysis. Data is sourced from 
+    <https://german-elections.com>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

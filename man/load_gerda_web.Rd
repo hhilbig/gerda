@@ -20,7 +20,7 @@ A tibble containing the loaded data, or NULL if the data could not be loaded.
 This function loads GERDA data from a web source.
 }
 \examples{
-\dontrun{
+\donttest{
 data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_format = "rds")
 }
 
