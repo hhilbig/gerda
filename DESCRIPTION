@@ -2,7 +2,7 @@ Package: gerda
 Title: German Election Database (GERDA)
 Version: 0.1.0
 Authors@R: 
-    person("Hilbig", "Hanno", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
+    person("Hanno", "Hilbig", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5849-9172"))
 Description: Provides tools to download comprehensive datasets of local, 
     state, and federal election results in Germany from 1990 to 2021. The package 
