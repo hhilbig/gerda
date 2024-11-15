@@ -20,7 +20,8 @@ devtools::install_github("hhilbig/gerda")
 
 ## Main Functions
 
-- **`gerda_data_list()`**: This function lists all available GERDA datasets along with their descriptions, printing a formatted table to the console using `knitr::kable()`.
+- **`gerda_data_list(print_table = TRUE)`**: Lists all available GERDA datasets along with their descriptions. Parameters:
+  - `print_table`: If `TRUE` (default), prints a formatted table to the console and invisibly returns a tibble. If `FALSE`, directly returns the tibble without printing.
 
 - **`load_gerda_web(file_name, verbose = FALSE, file_format = "rds")`**: This function loads a GERDA dataset from a web source. It takes the following parameters:
   - `file_name`: The name of the dataset to load (see `gerda_data_list()` for available options).
@@ -44,7 +45,7 @@ data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_for
 
 ## Note
 
-For a complete list of available datasets and their descriptions, use the `gerda_data_list()` function.
+For a complete list of available datasets and their descriptions, use the `gerda_data_list()` function. This function either prints a formatted table to the console and invisibly returns a tibble or directly returns the tibble without printing.
 
 ## Feedback
 
