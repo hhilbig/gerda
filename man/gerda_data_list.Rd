@@ -4,7 +4,7 @@
 \alias{gerda_data_list}
 \title{List of GERDA Data}
 \usage{
-gerda_data_list(print_table = T)
+gerda_data_list(print_table = TRUE)
 }
 \arguments{
 \item{print_table}{A logical value indicating whether to print the table in the console (TRUE) or return the data as a tibble (FALSE). Default is TRUE.}

@@ -12,7 +12,7 @@
 #'
 #' @export
 #'
-gerda_data_list <- function(print_table = T) {
+gerda_data_list <- function(print_table = TRUE) {
     data <- tibble::tribble(
         ~data_name,            ~description,
         "municipal_unharm",    "Local elections at the municipal level (1990-2020, unharmonized).",
