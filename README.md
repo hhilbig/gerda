@@ -36,7 +36,7 @@ devtools::install_github("hhilbig/gerda")
 
   The function includes fuzzy matching for file names and will suggest close matches if an exact match isn't found.
 
-- **`party_crosswalk(party_gerda, destination)`**: Maps party names to their corresponding values from the ParlGov database. Parameters:
+- **`party_crosswalk(party_gerda, destination)`**: Maps party names to their corresponding values from the ParlGov database. For a vector of party names, it returns a vector of the same length with the corresponding values from the destination column. Parameters:
   - `party_gerda`: A character vector of party names using GERDA's naming scheme
   - `destination`: The name of the column from ParlGov's view_party table to map to (e.g., "left_right" for ideology scores)
 
