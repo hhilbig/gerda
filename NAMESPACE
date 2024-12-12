@@ -2,6 +2,7 @@
 
 export(gerda_data_list)
 export(load_gerda_web)
+export(party_crosswalk)
 import(dplyr)
 import(readr)
 import(stringdist)
