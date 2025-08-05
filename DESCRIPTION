@@ -24,7 +24,8 @@ Imports:
     dplyr, 
     readr, 
     knitr, 
-    tibble
+    tibble,
+    httr
 Suggests: 
     rmarkdown,
     testthat (>= 3.0.0)
