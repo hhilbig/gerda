@@ -1,0 +1,13 @@
+* using log directory ‘/Users/hanno/Documents/GitHub/gerda/..Rcheck’
+* using R version 4.4.0 (2024-04-24)
+* using platform: aarch64-apple-darwin20
+* R was compiled by
+    Apple clang version 14.0.0 (clang-1400.0.29.202)
+    GNU Fortran (GCC) 12.2.0
+* running under: macOS 15.2
+* using session charset: UTF-8
+* using option ‘--as-cran’
+* checking for file ‘./DESCRIPTION’ ... OK
+* this is package ‘gerda’ version ‘0.2.0’
+* package encoding: UTF-8
+* checking CRAN incoming feasibility ...

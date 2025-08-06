@@ -51,7 +51,8 @@ test_that("load_gerda_web accepts valid dataset names", {
     valid_datasets <- c(
         "municipal_unharm", "municipal_harm", "state_unharm",
         "state_harm", "federal_muni_raw", "federal_muni_unharm",
-        "federal_muni_harm", "federal_cty_unharm", "federal_cty_harm",
+        "federal_muni_harm_21", "federal_muni_harm_25",
+        "federal_cty_unharm", "federal_cty_harm",
         "ags_crosswalks", "cty_crosswalks", "ags_area_pop_emp",
         "cty_area_pop_emp"
     )
