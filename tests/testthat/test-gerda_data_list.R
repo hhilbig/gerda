@@ -9,8 +9,8 @@ test_that("gerda_data_list returns correct structure with print_table = TRUE", {
     # Test that result has expected columns
     expect_true(all(c("data_name", "description") %in% colnames(result)))
 
-    # Test that result has expected number of rows (13 datasets as of current version)
-    expect_equal(nrow(result), 13)
+    # Test that result has expected number of rows (14 datasets as of current version)
+    expect_equal(nrow(result), 14)
 
     # Test that output was captured (meaning something was printed)
     expect_gt(length(output), 0)
@@ -19,7 +19,8 @@ test_that("gerda_data_list returns correct structure with print_table = TRUE", {
     expected_datasets <- c(
         "municipal_unharm", "municipal_harm", "state_unharm",
         "state_harm", "federal_muni_raw", "federal_muni_unharm",
-        "federal_muni_harm", "federal_cty_unharm", "federal_cty_harm",
+        "federal_muni_harm_21", "federal_muni_harm_25",
+        "federal_cty_unharm", "federal_cty_harm",
         "ags_crosswalks", "cty_crosswalks", "ags_area_pop_emp",
         "cty_area_pop_emp"
     )
@@ -37,7 +38,7 @@ test_that("gerda_data_list returns correct structure with print_table = FALSE", 
     expect_true(all(c("data_name", "description") %in% colnames(result)))
 
     # Test that result has expected number of rows
-    expect_equal(nrow(result), 13)
+    expect_equal(nrow(result), 14)
 
     # Test that no output is printed when print_table = FALSE
     output <- capture.output(result2 <- gerda_data_list(print_table = FALSE))

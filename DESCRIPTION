@@ -1,18 +1,19 @@
 Package: gerda
 Title: German Election Database (GERDA)
-Version: 0.1.0
+Version: 0.2.0
+Author: Hanno Hilbig [aut, cre] (<https://orcid.org/0000-0001-5849-9172>)
 Authors@R: 
     person("Hanno", "Hilbig", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5849-9172"))
 Description: Provides tools to download comprehensive datasets of local, 
-    state, and federal election results in Germany from 1990 to 2021. The package 
+    state, and federal election results in Germany from 1990 to 2025. The package 
     facilitates access to data on turnout, vote shares for major parties, and 
     demographic information across different levels of government (municipal, state, 
     and federal). It offers access to geographically harmonized datasets 
     that account for changes in municipal boundaries over time and incorporate 
     mail-in voting districts. Users can easily retrieve, clean, and standardize 
     German electoral data, making it ready for analysis. Data is sourced from 
-    <http://www.german-elections.com>.
+    <https://www.german-elections.com>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
