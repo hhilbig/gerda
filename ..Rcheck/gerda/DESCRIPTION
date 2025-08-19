@@ -13,24 +13,17 @@ Description: Provides tools to download comprehensive datasets of local,
     that account for changes in municipal boundaries over time and incorporate 
     mail-in voting districts. Users can easily retrieve, clean, and standardize 
     German electoral data, making it ready for analysis. Data is sourced from 
-    <https://github.com/awiedem/german_election_data>.
+    https://german-elections.com.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Depends: 
-    R (>= 2.10)
-Imports: 
-    stringdist, 
-    dplyr, 
-    readr, 
-    knitr, 
-    tibble
-Suggests: 
-    rmarkdown,
-    testthat (>= 3.0.0)
+Depends: R (>= 2.10)
+Imports: stringdist, dplyr, readr, knitr, tibble
+Suggests: rmarkdown, testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/hhilbig/gerda, https://github.com/awiedem/german_election_data
+URL: https://github.com/hhilbig/gerda, https://german-elections.com
 BugReports: https://github.com/hhilbig/gerda/issues
 VignetteBuilder: knitr
 Maintainer: Hanno Hilbig <hhilbig@ucdavis.edu>
+Built: R 4.4.0; ; 2025-08-12 09:38:50 UTC; unix

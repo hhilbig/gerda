@@ -1,0 +1,144 @@
+
+R version 4.4.0 (2024-04-24) -- "Puppy Cup"
+Copyright (C) 2024 The R Foundation for Statistical Computing
+Platform: aarch64-apple-darwin20
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> pkgname <- "gerda"
+> source(file.path(R.home("share"), "R", "examples-header.R"))
+> options(warn = 1)
+> base::assign(".ExTimings", "gerda-Ex.timings", pos = 'CheckExEnv')
+> base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+> base::assign(".format_ptime",
++ function(x) {
++   if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
++   if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
++   options(OutDec = '.')
++   format(x[1L:3L], digits = 7L)
++ },
++ pos = 'CheckExEnv')
+> 
+> ### * </HEADER>
+> library('gerda')
+> 
+> base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+> base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+> cleanEx()
+> nameEx("gerda_data_list")
+> ### * gerda_data_list
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: gerda_data_list
+> ### Title: List of GERDA Data
+> ### Aliases: gerda_data_list
+> 
+> ### ** Examples
+> 
+> gerda_data_list()
+|data_name            |description                                                                          |
+|:--------------------|:------------------------------------------------------------------------------------|
+|municipal_unharm     |Local elections at the municipal level (1990-2020, unharmonized).                    |
+|municipal_harm       |Local elections at the municipal level (1990-2020, harmonized).                      |
+|state_unharm         |State elections at the municipal level (2006-2019, unharmonized).                    |
+|state_harm           |State elections at the municipal level (2006-2019, harmonized).                      |
+|federal_muni_raw     |Federal elections at the municipal level (1980-2025, raw data).                      |
+|federal_muni_unharm  |Federal elections at the municipal level (1980-2025, unharmonized).                  |
+|federal_muni_harm_21 |Federal elections at the municipal level (1990-2025, harmonized to 2021 boundaries). |
+|federal_muni_harm_25 |Federal elections at the municipal level (1990-2025, harmonized to 2025 boundaries). |
+|federal_cty_unharm   |Federal elections at the county level (1953-2021, unharmonized).                     |
+|federal_cty_harm     |Federal elections at the county level (1990-2021, harmonized).                       |
+|ags_crosswalks       |Crosswalks for municipalities (1990-2025).                                           |
+|cty_crosswalks       |Crosswalks for counties (1990-2025).                                                 |
+|ags_area_pop_emp     |Crosswalk covariates (area, population, employment) for municipalities (1990-2025).  |
+|cty_area_pop_emp     |Crosswalk covariates (area, population, employment) for counties (1990-2025).        |
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("gerda_data_list", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("load_gerda_web")
+> ### * load_gerda_web
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: load_gerda_web
+> ### Title: Load GERDA Data
+> ### Aliases: load_gerda_web
+> 
+> ### ** Examples
+> 
+> ## No test: 
+> # Load harmonized municipal elections data
+> data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_format = "rds")
+File name found in data dictionary
+URL found: https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/municipal_elections/final/municipal_harm.rds
+Loading data...
+Data loaded successfully
+> 
+> # Load federal election data harmonized to 2025 boundaries (includes 2025 election)
+> data_federal_2025 <- load_gerda_web("federal_muni_harm_25", verbose = TRUE, file_format = "rds")
+File name found in data dictionary
+URL found: https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_harm_25.rds
+Loading data...
+Data loaded successfully
+> ## End(No test)
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("load_gerda_web", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> cleanEx()
+> nameEx("party_crosswalk")
+> ### * party_crosswalk
+> 
+> flush(stderr()); flush(stdout())
+> 
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: party_crosswalk
+> ### Title: GERDA
+> ### Aliases: party_crosswalk
+> 
+> ### ** Examples
+> 
+> party_crosswalk(c("cdu", "spd", "linke_pds", NA), "left_right")
+[1] 6.2503 3.6451 1.2152     NA
+> 
+> 
+> 
+> 
+> base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+> base::cat("party_crosswalk", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+> ### * <FOOTER>
+> ###
+> cleanEx()
+> options(digits = 7L)
+> base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+Time elapsed:  1.426 0.348 12.407 0.002 0.003 
+> grDevices::dev.off()
+null device 
+          1 
+> ###
+> ### Local variables: ***
+> ### mode: outline-minor ***
+> ### outline-regexp: "\\(> \\)?### [*]+" ***
+> ### End: ***
+> quit('no')
