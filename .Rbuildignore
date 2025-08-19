@@ -5,3 +5,7 @@
 ^LICENSE\.md$
 ^doc$
 ^Meta$
+^\.git$
+^\.gitignore$
+^\.DS_Store$
+^.*\.Rcheck$
