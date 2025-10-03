@@ -30,10 +30,7 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
         if (last_4_chars %in% c(".rds", ".csv")) {
             file_name <- substr(file_name, 1, nchar(file_name) - 4)
             message(
-                "File extension (.rds or .csv) not required - adding it is optional. ",
-                "File will be downloaded as ", file_format,
-                ". The object in the environment is independent of which format is loaded ",
-                "(i.e., the data always looks the same once loaded, regardless of format)."
+                "File extension (.rds or .csv) not required - adding it is optional."
             )
         }
     }
