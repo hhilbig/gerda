@@ -1,3 +1,12 @@
+# gerda 0.2.1
+
+## Bug Fixes and Improvements
+
+* Improved error message clarity for file extensions
+* Changed message from "Format ignored" to "File extension (.rds or .csv) not required - adding it is optional"
+* Simplified user messages by removing redundant information about data format independence
+* Updated tests to match improved message format
+
 # gerda 0.2.0
 
 ## New Features
