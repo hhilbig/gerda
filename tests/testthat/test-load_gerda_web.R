@@ -178,12 +178,12 @@ test_that("load_gerda_web message content validation", {
     # Test that the message contains the expected content
     expect_message(
         suppressWarnings(result <- load_gerda_web("municipal_harm.rds", file_format = "rds")),
-        "The object in the environment is independent of which format is loaded"
+        "File extension \\(.rds or .csv\\) not required - adding it is optional"
     )
 
     expect_message(
         suppressWarnings(result <- load_gerda_web("municipal_harm.csv", file_format = "csv")),
-        "the data always looks the same once loaded, regardless of format"
+        "File extension \\(.rds or .csv\\) not required - adding it is optional"
     )
 })
 
