@@ -114,25 +114,25 @@ test_that("load_gerda_web handles file extensions in filename", {
     # Test that .rds extension is detected and stripped
     expect_message(
         suppressWarnings(result <- load_gerda_web("municipal_harm.rds")),
-        "Format ignored, file will be downloaded as rds"
+        "File extension \\(.rds or .csv\\) not required - adding it is optional"
     )
 
     # Test that .csv extension is detected and stripped
     expect_message(
         suppressWarnings(result <- load_gerda_web("municipal_harm.csv")),
-        "Format ignored, file will be downloaded as rds"
+        "File extension \\(.rds or .csv\\) not required - adding it is optional"
     )
 
     # Test that .rds extension with different file_format parameter
     expect_message(
         suppressWarnings(result <- load_gerda_web("municipal_harm.rds", file_format = "csv")),
-        "Format ignored, file will be downloaded as csv"
+        "File extension \\(.rds or .csv\\) not required - adding it is optional"
     )
 
     # Test that .csv extension with different file_format parameter
     expect_message(
         suppressWarnings(result <- load_gerda_web("municipal_harm.csv", file_format = "rds")),
-        "Format ignored, file will be downloaded as rds"
+        "File extension \\(.rds or .csv\\) not required - adding it is optional"
     )
 })
 
