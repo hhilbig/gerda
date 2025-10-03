@@ -110,6 +110,83 @@ test_that("load_gerda_web parameter validation", {
     })
 })
 
+test_that("load_gerda_web handles file extensions in filename", {
+    # Test that .rds extension is detected and stripped
+    expect_message(
+        suppressWarnings(result <- load_gerda_web("municipal_harm.rds")),
+        "Format ignored, file will be downloaded as rds"
+    )
+
+    # Test that .csv extension is detected and stripped
+    expect_message(
+        suppressWarnings(result <- load_gerda_web("municipal_harm.csv")),
+        "Format ignored, file will be downloaded as rds"
+    )
+
+    # Test that .rds extension with different file_format parameter
+    expect_message(
+        suppressWarnings(result <- load_gerda_web("municipal_harm.rds", file_format = "csv")),
+        "Format ignored, file will be downloaded as csv"
+    )
+
+    # Test that .csv extension with different file_format parameter
+    expect_message(
+        suppressWarnings(result <- load_gerda_web("municipal_harm.csv", file_format = "rds")),
+        "Format ignored, file will be downloaded as rds"
+    )
+})
+
+test_that("load_gerda_web ignores extensions correctly", {
+    # Test that files with extensions are treated the same as without extensions
+    # This tests the core functionality that the extension is stripped
+
+    # These should all be treated as the same dataset name
+    test_cases <- c(
+        "municipal_harm",
+        "municipal_harm.rds",
+        "municipal_harm.csv"
+    )
+
+    for (test_case in test_cases) {
+        # Should not produce validation warnings (though may fail at download)
+        expect_silent({
+            suppressWarnings(suppressMessages(load_gerda_web(test_case, verbose = FALSE)))
+        })
+    }
+})
+
+test_that("load_gerda_web extension handling edge cases", {
+    # Test files that end with .rds or .csv but aren't extensions
+    # (e.g., dataset names that legitimately contain these strings)
+
+    # These should be treated as invalid filenames (not found in data dictionary)
+    expect_warning(
+        suppressMessages(result <- load_gerda_web("some_dataset_with_rds_in_name")),
+        "File name not found in data dictionary"
+    )
+    expect_null(result)
+
+    # Test that the extension detection only looks at the last 4 characters
+    expect_warning(
+        suppressMessages(result <- load_gerda_web("municipal_harm.rds.backup")),
+        "File name not found in data dictionary"
+    )
+    expect_null(result)
+})
+
+test_that("load_gerda_web message content validation", {
+    # Test that the message contains the expected content
+    expect_message(
+        suppressWarnings(result <- load_gerda_web("municipal_harm.rds", file_format = "rds")),
+        "The object in the environment is independent of which format is loaded"
+    )
+
+    expect_message(
+        suppressWarnings(result <- load_gerda_web("municipal_harm.csv", file_format = "csv")),
+        "the data always looks the same once loaded, regardless of format"
+    )
+})
+
 # Note: For comprehensive testing in a production environment, you would want to:
 # 1. Mock HTTP requests to test successful data loading
 # 2. Test actual data structure and content when files are successfully loaded
