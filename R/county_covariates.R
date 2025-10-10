@@ -1,0 +1,87 @@
+#' County-Level Covariates from INKAR
+#'
+#' @description
+#' A dataset containing county-level socioeconomic and demographic indicators for 400 German counties
+#' from 1995 to 2022. Data are from INKAR (Indikatoren und Karten zur Raum- und Stadtentwicklung),
+#' provided by the Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR).
+#'
+#' This dataset is designed to be merged with GERDA election data. County codes are formatted
+#' to match GERDA's 5-digit county codes. Use a left join with GERDA data to automatically
+#' retain only election years.
+#'
+#' @format A data frame with 11,200 rows and 22 variables:
+#' \describe{
+#'   \item{county_code}{5-digit county code (AGS), matching GERDA format}
+#'   \item{year}{Year of observation (1995-2022)}
+#'   \item{share_65plus}{Share of population aged 65 and older (percent)}
+#'   \item{median_age}{Median age of population (years)}
+#'   \item{share_foreign}{Share of foreign population (percent)}
+#'   \item{share_female}{Share of female population (percent)}
+#'   \item{gdp_per_capita}{GDP per capita in euros}
+#'   \item{share_primary_sector}{Primary sector share of gross value added (percent)}
+#'   \item{share_secondary_sector}{Secondary sector share of gross value added (percent)}
+#'   \item{share_tertiary_sector}{Tertiary sector share of gross value added (percent)}
+#'   \item{share_micro_enterprises}{Share of micro enterprises (percent)}
+#'   \item{share_large_enterprises}{Share of large enterprises (percent)}
+#'   \item{unemployment_rate}{Unemployment rate (percent)}
+#'   \item{share_longterm_unemployed}{Share of long-term unemployed (percent of all unemployed)}
+#'   \item{youth_unemployment_rate}{Youth unemployment rate, under 25 (percent)}
+#'   \item{share_abitur}{Share of school leavers with Abitur (percent)}
+#'   \item{share_no_degree}{Share of school leavers without any degree (percent)}
+#'   \item{students_per_100}{University students per 100 residents aged 18-25}
+#'   \item{apprentices_per_100}{Apprentices per 100 residents aged 15-25}
+#'   \item{median_income}{Median income in euros}
+#'   \item{purchasing_power}{Purchasing power index}
+#'   \item{share_low_income_hh}{Share of low-income households (percent)}
+#' }
+#'
+#' @details
+#' ## Data Source
+#' Data are downloaded from INKAR using the \code{{inkr}} R package:
+#' \itemize{
+#'   \item Nguyen HL (2024). {inkr}: Local Access from R to All INKAR Data.
+#'         \doi{10.5281/zenodo.7643755}
+#'   \item Data provided by: Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR)
+#'   \item License: Data licence Germany – attribution – version 2.0
+#' }
+#'
+#' ## Missing Data
+#' Some variables have missing values, particularly for earlier years:
+#' \itemize{
+#'   \item Basic demographics (age, foreign population): Nearly complete
+#'   \item Economic indicators: Some missingness in earlier years
+#'   \item Income variables: More limited coverage, especially before 2020
+#' }
+#'
+#' ## Merging with GERDA
+#' To merge with GERDA election data, use a left join with GERDA data on the left side.
+#' This automatically keeps only election years:
+#'
+#' @examples
+#' \dontrun{
+#' # Load GERDA election data
+#' library(gerda)
+#' elections <- load_gerda_web("federal_cty_harm")
+#'
+#' # Load covariates (built-in data)
+#' data(county_covariates)
+#'
+#' # Merge: GERDA left, keeps only election years
+#' library(dplyr)
+#' merged <- elections %>%
+#'   left_join(county_covariates,
+#'             by = c("county_code" = "county_code", "election_year" = "year"))
+#'
+#' # Check result
+#' table(merged$election_year)  # Only election years (1998, 2002, 2005, etc.)
+#' }
+#'
+#' @note
+#' This dataset is not part of the official GERDA data collection, but is provided
+#' as a convenience for researchers working with German election data. County codes
+#' follow the 2021 boundaries and match GERDA's harmonized county codes.
+#'
+#' @seealso \code{\link{load_gerda_web}} for loading GERDA election data
+#'
+"county_covariates"
+
