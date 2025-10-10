@@ -1,0 +1,46 @@
+MAIN COUNTY-LEVEL COVARIATES FROM INKAR
+==========================================
+
+These 20 indicators cover key dimensions commonly used in electoral research:
+demographics, economic conditions, education, and labor market.
+
+ECONOMY (6 indicators):
+-----------------------
+1. q_bip_ew             - Bruttoinlandsprodukt je Einwohner (GDP per capita)
+2. a_bws_1sektor        - Anteil Bruttowertschöpfung Primärer Sektor (Primary sector share)
+3. a_bws_2sektor        - Anteil Bruttowertschöpfung Sekundärer Sektor (Manufacturing share)
+4. a_bws_3sektor        - Anteil Bruttowertschöpfung Tertiärer Sektor (Services share)
+5. a_betr_kleinst       - Kleinstbetriebe (Micro enterprises share)
+6. a_betr_gro           - Großunternehmen (Large enterprises share)
+
+UNEMPLOYMENT / LABOR MARKET (4 indicators):
+--------------------------------------------
+7. q_alo                - Arbeitslosenquote (Unemployment rate)
+8. a_aloLang            - Langzeitarbeitslose (Long-term unemployed share)
+9. q_alo_u25            - Arbeitslosenquote Jüngere (Youth unemployment rate)
+10. q_alo_ü55           - Arbeitslosenquote Ältere (Older workers unemployment rate)
+
+EDUCATION (4 indicators):
+-------------------------
+11. a_schul_abi         - Schulabgänger mit allgemeiner Hochschulreife (High school graduate share)
+12. a_schul_oA          - Schulabgänger ohne Abschluss (School leavers without qualification)
+13. q_stud_1825         - Studierende je 100 Einwohner 18-25 Jahre (University students rate)
+14. q_azubi_1525        - Auszubildende je 100 Einwohner 15-25 Jahre (Apprentices rate)
+
+INCOME / WEALTH (3 indicators):
+--------------------------------
+15. m_ek                - Medianeinkommen (Median income)
+16. q_kaufkraft         - Kaufkraft (Purchasing power)
+17. a_hheink_niedrig    - Haushalte mit niedrigem Einkommen (Low income households share)
+
+DEMOGRAPHICS (3 indicators):
+----------------------------
+From the bevoelkerung table, we'll need to check available indicators.
+Potential key ones:
+18. Population density
+19. Age structure (e.g., share 65+)
+20. Migration background / foreign population share
+
+Note: The bevoelkerung and other tables might need separate queries as they weren't
+showing in the filtered output above (likely 80 indicators makes it complex).
+
