@@ -63,17 +63,22 @@
 #' library(gerda)
 #' elections <- load_gerda_web("federal_cty_harm")
 #'
-#' # Load covariates (built-in data)
+#' # Access covariates (automatically available after loading gerda)
+#' # Option 1: Direct access (with LazyData enabled)
+#' head(county_covariates)
+#'
+#' # Option 2: Explicit loading (always works)
 #' data(county_covariates)
 #'
 #' # Merge: GERDA left, keeps only election years
 #' library(dplyr)
 #' merged <- elections %>%
-#'   left_join(county_covariates,
-#'             by = c("county_code" = "county_code", "election_year" = "year"))
+#'     left_join(county_covariates,
+#'         by = c("county_code" = "county_code", "election_year" = "year")
+#'     )
 #'
 #' # Check result
-#' table(merged$election_year)  # Only election years (1998, 2002, 2005, etc.)
+#' table(merged$election_year) # Only election years (1998, 2002, 2005, etc.)
 #' }
 #'
 #' @note
@@ -81,7 +86,10 @@
 #' as a convenience for researchers working with German election data. County codes
 #' follow the 2021 boundaries and match GERDA's harmonized county codes.
 #'
-#' @seealso \code{\link{load_gerda_web}} for loading GERDA election data
+#' @seealso
+#' \itemize{
+#'   \item \code{\link{load_gerda_web}} for loading GERDA election data
+#'   \item \code{\link{covariates_codebook}} for a detailed data dictionary
+#' }
 #'
 "county_covariates"
-

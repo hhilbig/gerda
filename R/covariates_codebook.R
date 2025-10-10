@@ -1,0 +1,68 @@
+#' Codebook for County Covariates
+#'
+#' @description
+#' A data dictionary documenting all variables in the \code{county_covariates} dataset.
+#' Provides variable names, labels, units, categories, original INKAR codes, and notes
+#' on data quality.
+#'
+#' @format A data frame with 22 rows and 7 variables:
+#' \describe{
+#'   \item{variable}{Variable name in county_covariates dataset}
+#'   \item{label}{Human-readable description of the variable}
+#'   \item{unit}{Unit of measurement (e.g., "percent", "euros", "years")}
+#'   \item{category}{Thematic category (ID, Demographics, Economy, Labor Market, Education, Income)}
+#'   \item{inkar_code}{Original INKAR indicator code (from BBSR)}
+#'   \item{notes}{Additional notes about the variable}
+#'   \item{missing_pct}{Percentage of missing values in the dataset}
+#' }
+#'
+#' @details
+#' ## Categories
+#' The codebook organizes variables into thematic categories:
+#' \itemize{
+#'   \item \strong{ID}: Identifiers (county_code, year)
+#'   \item \strong{Demographics}: Population structure (4 variables)
+#'   \item \strong{Economy}: Economic indicators (6 variables)
+#'   \item \strong{Labor Market}: Employment and unemployment (3 variables)
+#'   \item \strong{Education}: Educational attainment (4 variables)
+#'   \item \strong{Income}: Income and purchasing power (3 variables)
+#' }
+#'
+#' ## Missing Data
+#' The \code{missing_pct} column shows the percentage of missing values for each variable.
+#' Some variables have substantial missingness:
+#' \itemize{
+#'   \item High missingness (>50\%): median_income, purchasing_power, share_low_income_hh,
+#'         apprentices_per_100, youth_unemployment_rate
+#'   \item Moderate missingness (20-50\%): enterprise structure, sectoral composition
+#'   \item Low missingness (<20\%): Most demographic and labor market indicators
+#'   \item No missingness: share_65plus, median_age, share_foreign, share_female,
+#'         share_longterm_unemployed
+#' }
+#'
+#' ## Data Source
+#' All variables are derived from INKAR (Indikatoren und Karten zur Raum- und
+#' Stadtentwicklung), provided by the Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR).
+#'
+#' @examples
+#' # View the codebook
+#' data(covariates_codebook)
+#' print(covariates_codebook)
+#'
+#' # View variables by category
+#' table(covariates_codebook$category)
+#'
+#' # Find variables with low missingness
+#' library(dplyr)
+#' covariates_codebook %>%
+#'   filter(missing_pct < 5) %>%
+#'   select(variable, label, missing_pct)
+#'
+#' # Get details on a specific variable
+#' covariates_codebook %>%
+#'   filter(variable == "unemployment_rate")
+#'
+#' @seealso \code{\link{county_covariates}} for the actual data
+#'
+"covariates_codebook"
+
