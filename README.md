@@ -64,8 +64,8 @@ library(dplyr)
 # Load GERDA election data
 elections <- load_gerda_web("federal_cty_harm")
 
-# Load covariates (built-in)
-data(county_covariates)
+# Access covariates (automatically loaded with gerda)
+head(county_covariates)
 
 # Merge: use left_join with elections on the left
 # This keeps only election years automatically
@@ -77,13 +77,14 @@ merged <- elections %>%
 ```
 
 The dataset includes 20 variables covering:
+
 - **Demographics**: Age structure, foreign population, gender
 - **Economy**: GDP, sectoral composition, enterprise structure
 - **Labor market**: Unemployment rates (overall, youth, long-term)
 - **Education**: School completion rates, students, apprentices
 - **Income**: Median income, purchasing power, low-income households
 
-See `?county_covariates` for full documentation and data sources.
+See `?county_covariates` for full documentation and `covariates_codebook` for a complete data dictionary with variable descriptions, units, and missing data information.
 
 ## Note
 
