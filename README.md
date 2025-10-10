@@ -53,6 +53,38 @@ available_data <- gerda_data_list()
 data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_format = "rds")
 ```
 
+## County-Level Covariates
+
+The package includes a built-in dataset `county_covariates` with socioeconomic and demographic indicators for 400 German counties (1995-2022) from INKAR. These can be merged with GERDA election data:
+
+```R
+library(gerda)
+library(dplyr)
+
+# Load GERDA election data
+elections <- load_gerda_web("federal_cty_harm")
+
+# Load covariates (built-in)
+data(county_covariates)
+
+# Merge: use left_join with elections on the left
+# This keeps only election years automatically
+merged <- elections %>%
+  left_join(county_covariates,
+            by = c("county_code" = "county_code", "election_year" = "year"))
+
+# Now you have election results with covariates!
+```
+
+The dataset includes 20 variables covering:
+- **Demographics**: Age structure, foreign population, gender
+- **Economy**: GDP, sectoral composition, enterprise structure
+- **Labor market**: Unemployment rates (overall, youth, long-term)
+- **Education**: School completion rates, students, apprentices
+- **Income**: Median income, purchasing power, low-income households
+
+See `?county_covariates` for full documentation and data sources.
+
 ## Note
 
 For a complete list of available datasets and their descriptions, use the `gerda_data_list()` function. This function either prints a formatted table to the console and invisibly returns a tibble or directly returns the tibble without printing.

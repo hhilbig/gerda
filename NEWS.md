@@ -1,3 +1,13 @@
+# gerda (development version)
+
+## New Features
+
+* Added `county_covariates` dataset: County-level socioeconomic and demographic indicators (1995-2022)
+  * 400 German counties with 20 covariates from INKAR
+  * Designed for easy merging with GERDA election data
+  * Includes demographics, economy, labor market, education, and income variables
+  * Data source: Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR)
+
 # gerda 0.2.1
 
 ## Bug Fixes and Improvements
