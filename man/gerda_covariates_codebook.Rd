@@ -2,7 +2,7 @@
 % Please edit documentation in R/gerda_covariates.R
 \name{gerda_covariates_codebook}
 \alias{gerda_covariates_codebook}
-\title{Get Codebook for County Covariates}
+\title{Get Codebook for County-Level Covariates}
 \usage{
 gerda_covariates_codebook()
 }
@@ -11,9 +11,10 @@ A data frame with 22 rows documenting all variables in the county
 covariates dataset.
 }
 \description{
-Returns the data dictionary for county-level covariates. Provides variable
-names, labels, units, categories, original INKAR codes, and missing data
-information.
+Returns the data dictionary for county-level (Kreis) covariates from INKAR.
+Provides variable names, labels, units, categories, original INKAR codes,
+and missing data information for all county-level socioeconomic and
+demographic indicators.
 }
 \examples{
 # View the full codebook

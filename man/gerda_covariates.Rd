@@ -2,7 +2,7 @@
 % Please edit documentation in R/gerda_covariates.R
 \name{gerda_covariates}
 \alias{gerda_covariates}
-\title{Get County-Level Covariates}
+\title{Get County-Level Covariates from INKAR}
 \usage{
 gerda_covariates()
 }
@@ -12,12 +12,16 @@ covariates for 400 German counties from 1995 to 2022. See
 \code{\link{gerda_covariates_codebook}} for variable descriptions.
 }
 \description{
-Returns the INKAR county-level covariates dataset. This function provides
-flexible access to the raw covariate data for advanced users who want to
-inspect or manipulate it before merging with election data.
+Returns county-level socioeconomic and demographic covariates from INKAR.
+This function provides flexible access to the raw covariate data for
+advanced users who want to inspect or manipulate it before merging with
+county-level election data.
 
 For most users, we recommend using \code{\link{add_gerda_covariates}} instead,
 which automatically performs the merge with correct join keys.
+
+\strong{Note}: These covariates are at the county (Kreis) level and should be
+merged with county-level GERDA data (e.g., \code{federal_cty_harm}).
 }
 \details{
 The dataset includes 20 socioeconomic and demographic variables:
