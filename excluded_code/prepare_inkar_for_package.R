@@ -15,11 +15,11 @@ inkar_full <- readRDS("data_not_used/rds/inkar_county_covariates.rds")
 # 3. Rename to make clear it's for merging
 
 county_covariates <- inkar_full |>
-  mutate(
-    county_code = substr(county_code, 1, 5)  # Convert to 5-digit
-  ) |>
-  select(-county_name) |>  # Remove county_name to avoid conflicts in merge
-  arrange(county_code, year)
+    mutate(
+        county_code = substr(county_code, 1, 5) # Convert to 5-digit
+    ) |>
+    select(-county_name) |> # Remove county_name to avoid conflicts in merge
+    arrange(county_code, year)
 
 # Summary
 cat("\n=== Dataset Summary ===\n")
@@ -33,9 +33,9 @@ print(names(county_covariates))
 
 cat("\n=== Sample data ===\n")
 county_covariates |>
-  filter(county_code == "01001", year >= 2017) |>
-  select(county_code, year, share_65plus, unemployment_rate, median_income) |>
-  print()
+    filter(county_code == "01001", year >= 2017) |>
+    select(county_code, year, share_65plus, unemployment_rate, median_income) |>
+    print()
 
 # Save for package
 cat("\n=== Saving ===\n")
@@ -47,4 +47,3 @@ cat("\nNext steps:\n")
 cat("1. Copy data_not_used/county_covariates.rda to data/ folder\n")
 cat("2. Create R/county_covariates.R with documentation\n")
 cat("3. Run devtools::document() to update package\n")
-

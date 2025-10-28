@@ -16,7 +16,6 @@ Description: Provides tools to download comprehensive datasets of local,
     <https://github.com/awiedem/german_election_data>.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Depends: 
