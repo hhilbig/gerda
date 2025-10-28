@@ -6,8 +6,12 @@
 library(gerda)
 library(dplyr)
 
-# Load election data and add covariates in one step
-merged <- load_gerda_web("federal_cty_harm") %>%
+# Works with county-level data
+county_data <- load_gerda_web("federal_cty_harm") %>%
+  add_gerda_covariates()
+
+# Also works with municipal-level data
+muni_data <- load_gerda_web("federal_muni_harm_21") %>%
   add_gerda_covariates()
 
 # Done! Your data is ready.
@@ -16,9 +20,13 @@ merged <- load_gerda_web("federal_cty_harm") %>%
 That's it! The `merged` dataset now contains all election results with covariates.
 
 The `add_gerda_covariates()` function automatically:
-- Uses correct join keys
+
+- Works with both county and municipal data
+- Auto-detects data level and uses correct join keys
 - Keeps only election years (left join)
 - Prevents common merge errors
+
+**Note**: Covariates are at the county level. When merging with municipal data, all municipalities within the same county will have identical covariate values.
 
 ---
 
