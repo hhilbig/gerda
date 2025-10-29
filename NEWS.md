@@ -1,4 +1,4 @@
-# gerda (development version)
+# gerda 0.3.0
 
 ## New Features
 
@@ -6,10 +6,15 @@
   * New function: `add_gerda_covariates()` - One-step helper to merge covariates with election data
   * New function: `gerda_covariates()` - Access raw covariate data (400 counties, 20 variables)
   * New function: `gerda_covariates_codebook()` - View data dictionary with variable descriptions
+  * Works with both county-level and municipal-level election data
   * 400 German counties with covariates from INKAR
   * Includes demographics, economy, labor market, education, and income variables
   * Data source: Bundesinstitut für Bau-, Stadt- und Raumforschung (BBSR)
   * Function-based API prevents namespace pollution and merge errors
+
+## Other Changes
+
+* Updated R dependency to >= 3.5.0 (required for internal data serialization)
 
 # gerda 0.2.1
 
