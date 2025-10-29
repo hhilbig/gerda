@@ -91,14 +91,14 @@ gerda_covariates_codebook <- function() {
 #' Add County-Level Covariates to GERDA Election Data
 #'
 #' @description
-#' Convenience function to merge INKAR county-level (Kreis) covariates with 
+#' Convenience function to merge INKAR county-level (Kreis) covariates with
 #' GERDA election data. This is the recommended way to add covariates, as it
 #' automatically uses the correct join keys and prevents common merge errors.
 #'
 #' The function works with both county-level and municipal-level election data:
 #' \itemize{
 #'   \item \strong{County-level data}: Direct merge using county codes
-#'   \item \strong{Municipal-level data}: Automatically extracts county code 
+#'   \item \strong{Municipal-level data}: Automatically extracts county code
 #'         from municipal AGS (first 5 digits) and merges
 #' }
 #'
@@ -110,7 +110,7 @@ gerda_covariates_codebook <- function() {
 #' and adding covariates where available. This automatically retains only
 #' election years.
 #'
-#' @param election_data A data frame containing GERDA election data. Must 
+#' @param election_data A data frame containing GERDA election data. Must
 #'   contain a column with county or municipal codes (see Details) and
 #'   \code{election_year}.
 #'
@@ -169,8 +169,10 @@ gerda_covariates_codebook <- function() {
 #' # Verify: municipalities in same county have same covariate values
 #' muni_data %>%
 #'   group_by(county_code_21, election_year) %>%
-#'   summarize(n_munis = n(), 
-#'             unemp_range = max(unemployment_rate) - min(unemployment_rate))
+#'   summarize(
+#'     n_munis = n(),
+#'     unemp_range = max(unemployment_rate) - min(unemployment_rate)
+#'   )
 #'
 #' # Analyze with covariates
 #' county_data %>%
@@ -192,22 +194,22 @@ add_gerda_covariates <- function(election_data) {
   if (!is.data.frame(election_data)) {
     stop("election_data must be a data frame")
   }
-  
+
   if (!"election_year" %in% names(election_data)) {
     stop("election_data must contain an 'election_year' column")
   }
-  
+
   # Detect data level (county or municipal)
   has_county_code <- "county_code" %in% names(election_data)
   has_ags <- "ags" %in% names(election_data)
-  
+
   if (!has_county_code && !has_ags) {
     stop("election_data must contain either 'county_code' (for county-level data) or 'ags' (for municipal-level data)")
   }
-  
+
   # Get covariates
   covs <- gerda_covariates()
-  
+
   # Handle based on data level
   if (has_county_code) {
     # County-level data: direct merge
@@ -216,12 +218,13 @@ add_gerda_covariates <- function(election_data) {
         covs,
         by = c("county_code" = "county_code", "election_year" = "year")
       )
-    
   } else {
     # Municipal-level data: extract county code and merge
-    message("Merging county-level covariates to municipal-level data.\n",
-            "Note: All municipalities within the same county will have identical covariate values.")
-    
+    message(
+      "Merging county-level covariates to municipal-level data.\n",
+      "Note: All municipalities within the same county will have identical covariate values."
+    )
+
     result <- election_data %>%
       dplyr::mutate(county_code_temp = substr(ags, 1, 5)) %>%
       dplyr::left_join(
@@ -230,6 +233,6 @@ add_gerda_covariates <- function(election_data) {
       ) %>%
       dplyr::select(-county_code_temp)
   }
-  
+
   return(result)
 }
