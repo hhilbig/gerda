@@ -67,6 +67,81 @@ gerda_data_list()
 federal_cty_harm <- load_gerda_web("federal_cty_harm", verbose = TRUE)
 ```
 
+## County-Level Covariates
+
+The `gerda` package includes county-level socioeconomic and demographic covariates from INKAR (Indikatoren und Karten zur Raum- und Stadtentwicklung). These covariates can be easily merged with GERDA election data to enrich your analyses.
+
+### Quick Start
+
+The easiest way to add covariates to your election data is using the `add_gerda_covariates()` function:
+
+```{r, eval=FALSE}
+library(dplyr)
+
+# Load election data and add covariates
+merged <- load_gerda_web("federal_cty_harm") %>%
+  add_gerda_covariates()
+
+# Your data now includes 20 county-level covariates!
+```
+
+This function automatically:
+
+- Uses the correct join keys
+- Keeps only election years (left join)
+- Validates input data
+
+### Available Covariates
+
+The covariates dataset includes 20 variables covering:
+
+- **Demographics**: Age structure, foreign population, gender composition
+- **Economy**: GDP per capita, sectoral composition, enterprise structure
+- **Labor Market**: Unemployment rates (overall, youth, long-term)
+- **Education**: School completion rates, students, apprentices
+- **Income**: Median income, purchasing power, low-income households
+
+### Viewing the Codebook
+
+To see detailed information about each covariate, including units and missing data patterns:
+
+```{r, eval=FALSE}
+# Get the codebook
+codebook <- gerda_covariates_codebook()
+print(codebook)
+
+# Find variables with good coverage
+library(dplyr)
+codebook %>%
+  filter(missing_pct < 10) %>%
+  select(variable, label, category)
+```
+
+### Advanced Usage
+
+For more control, you can access the raw covariates data:
+
+```{r, eval=FALSE}
+# Get raw covariate data
+covs <- gerda_covariates()
+
+# Inspect before merging
+summary(covs$unemployment_rate)
+
+# Custom merge
+elections <- load_gerda_web("federal_cty_harm")
+merged <- elections %>%
+  inner_join(covs, by = c("county_code" = "county_code", "election_year" = "year"))
+```
+
+### Data Coverage
+
+- **Counties**: 400 German counties (Kreise)
+- **Time period**: 1995-2022 (annual data)
+- **Election coverage**: Elections from 1998 onwards have full covariate data
+
+Note: Some covariates have missing values. Use the codebook to check data availability for specific variables before analysis.
+
 ## Party Crosswalk Function
 
 The `party_crosswalk()` function provides a mapping between GERDA party names and standardized party information from the ParlGov database. This is particularly useful for linking GERDA data with other political science datasets or for obtaining standardized party characteristics.
