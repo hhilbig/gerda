@@ -9,17 +9,20 @@ This document summarizes the implementation of county-level covariates in the GE
 We implemented a **hybrid approach** combining flexibility and ease-of-use:
 
 #### 1. Recommended: One-Step Helper Function
+
 ```r
 merged <- load_gerda_web("federal_cty_harm") %>%
   add_gerda_covariates()
 ```
 
 **Benefits:**
+
 - Simplest user experience (1 line)
 - Prevents merge errors (correct join keys built-in)
 - Input validation (checks for required columns)
 
 #### 2. Advanced: Accessor Functions
+
 ```r
 # Get raw data for inspection/manipulation
 covs <- gerda_covariates()
@@ -33,6 +36,7 @@ merged <- elections %>%
 ```
 
 **Benefits:**
+
 - Full flexibility for advanced users
 - Can inspect data before merging
 - Can use different join types (inner_join, etc.)
@@ -53,17 +57,20 @@ merged <- elections %>%
 ## Data Structure
 
 ### Internal Data (R/sysdata.rda)
+
 - `county_covariates_internal` - 11,200 rows × 22 columns
 - `covariates_codebook_internal` - 22 rows × 7 columns
 - Both stored internally (not exported directly)
 
 ### Coverage
+
 - **Counties**: 400 German counties (Kreise)
 - **Time period**: 1995-2022 (annual)
 - **Observations**: 11,200
 - **Variables**: 20 covariates + county_code + year
 
 ### Variable Categories
+
 1. **Demographics** (4 variables): Age, foreign population, gender
 2. **Economy** (6 variables): GDP, sectoral composition, enterprise structure
 3. **Labor Market** (3 variables): Unemployment rates
@@ -71,6 +78,7 @@ merged <- elections %>%
 5. **Income** (3 variables): Median income, purchasing power
 
 ### Data Quality
+
 - **Excellent coverage** (0% missing): Demographics basics, long-term unemployment
 - **Good coverage** (<20% missing): Unemployment, GDP, education
 - **Moderate coverage** (20-50% missing): Enterprise structure, sectors
@@ -79,6 +87,7 @@ merged <- elections %>%
 ## Merge Compatibility with GERDA
 
 ### Election Years with Covariates
+
 | Election Year | Covariates Available | Match Rate |
 |---------------|---------------------|------------|
 | 1990 | ✗ (before 1995) | 0% |
@@ -94,6 +103,7 @@ merged <- elections %>%
 **Overall**: 7 of 9 elections have full covariate coverage (77.8%)
 
 ### County Code Matching
+
 - **INKAR format**: 8-digit codes (`01001000`)
 - **GERDA format**: 5-digit codes (`01001`)
 - **Solution**: First 5 digits of INKAR match GERDA perfectly
@@ -102,6 +112,7 @@ merged <- elections %>%
 ## Files Created
 
 ### Core Package Files
+
 - `R/gerda_covariates.R` - Three exported functions with documentation
 - `R/sysdata.rda` - Internal data storage
 - `man/gerda_covariates.Rd` - Accessor function documentation
@@ -109,6 +120,7 @@ merged <- elections %>%
 - `man/add_gerda_covariates.Rd` - Helper function documentation
 
 ### Support Scripts (excluded_code/)
+
 1. `download_main_county_covariates.R` - Download 20 key indicators from INKAR
 2. `explore_inkar_indicators.R` - Explore available INKAR indicators
 3. `create_covariates_codebook.R` - Generate data dictionary
@@ -122,6 +134,7 @@ merged <- elections %>%
 11. `README_covariates.md` - Detailed documentation
 
 ### Documentation Updates
+
 - `README.md` - Added "County-Level Covariates" section
 - `NEWS.md` - Added development version notes
 - `DESCRIPTION` - Removed LazyData (not needed for internal data)
@@ -130,6 +143,7 @@ merged <- elections %>%
 ## Usage Examples
 
 ### Minimal Example (Recommended)
+
 ```r
 library(gerda)
 library(dplyr)
@@ -140,6 +154,7 @@ merged <- load_gerda_web("federal_cty_harm") %>%
 ```
 
 ### With Data Exploration
+
 ```r
 library(gerda)
 library(dplyr)
@@ -159,6 +174,7 @@ merged %>%
 ```
 
 ### Advanced Custom Merge
+
 ```r
 library(gerda)
 library(dplyr)
@@ -214,4 +230,3 @@ d4218ef Add INKAR county-level covariates download scripts
 **Implementation Date**: October 2025
 **Branch**: `covariate-branch`
 **Status**: Ready for review/merge to main
-

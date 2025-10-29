@@ -28,20 +28,26 @@ cat("  Loaded elections:", nrow(elections), "rows\n")
 merged <- add_gerda_covariates(elections)
 cat("  ✓ Merged:", nrow(merged), "rows (same as elections!)\n")
 cat("  ✓ New columns added:", ncol(merged) - ncol(elections), "\n")
-cat("  ✓ Coverage (share_65plus):",
+cat(
+    "  ✓ Coverage (share_65plus):",
     sum(!is.na(merged$share_65plus)), "/", nrow(merged),
-    "(", round(100 * sum(!is.na(merged$share_65plus)) / nrow(merged), 1), "%)\n\n")
+    "(", round(100 * sum(!is.na(merged$share_65plus)) / nrow(merged), 1), "%)\n\n"
+)
 
 # Test 4: Error handling
 cat("Test 4: Error handling\n")
 bad_data <- data.frame(x = 1:10)
-tryCatch({
-  add_gerda_covariates(bad_data)
-  cat("  ✗ Should have raised error!\n")
-}, error = function(e) {
-  cat("  ✓ Correctly rejected data without county_code:", 
-      conditionMessage(e), "\n")
-})
+tryCatch(
+    {
+        add_gerda_covariates(bad_data)
+        cat("  ✗ Should have raised error!\n")
+    },
+    error = function(e) {
+        cat(
+            "  ✓ Correctly rejected data without county_code:",
+            conditionMessage(e), "\n"
+        )
+    }
+)
 
 cat("\n=== All tests passed! ===\n")
-
