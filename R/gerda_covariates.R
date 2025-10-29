@@ -190,6 +190,9 @@ gerda_covariates_codebook <- function() {
 #'
 #' @export
 add_gerda_covariates <- function(election_data) {
+  # Avoid NOTE in R CMD check for NSE variables
+  ags <- county_code_temp <- NULL
+
   # Validate input
   if (!is.data.frame(election_data)) {
     stop("election_data must be a data frame")
