@@ -1,3 +1,13 @@
+# gerda 0.4.0
+
+## Bug Fixes and Improvements
+
+* Improved error messages for deprecated `federal_muni_harm` dataset with clear migration guidance
+* Enhanced fuzzy matching to prioritize prefix matches (e.g., `federal_muni_harm` now correctly suggests `federal_muni_harm_21` and `federal_muni_harm_25`)
+* Added references to `gerda_data_list()` in all error messages to help users discover available datasets
+* Updated README and vignette to reflect current data coverage (1990-2025)
+* Fixed function references in documentation (`gerda_covariates` and `gerda_covariates_codebook`)
+
 # gerda 0.3.0
 
 ## New Features

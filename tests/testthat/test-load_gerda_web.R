@@ -3,10 +3,14 @@ test_that("load_gerda_web handles invalid file names correctly", {
     expect_warning(result <- load_gerda_web("invalid_dataset_name"))
     expect_null(result)
 
-    # Test that warning message is informative
+    # Test that warning message is informative and includes gerda_data_list reference
     expect_warning(
         load_gerda_web("nonexistent"),
         "File name not found in data dictionary"
+    )
+    expect_warning(
+        load_gerda_web("nonexistent"),
+        "gerda_data_list"
     )
 })
 
@@ -17,18 +21,53 @@ test_that("load_gerda_web fuzzy matching works", {
         "Did you mean"
     )
     expect_null(result)
+    expect_warning(
+        result <- load_gerda_web("municipal_harn"),
+        "gerda_data_list"
+    )
 
     expect_warning(
         result <- load_gerda_web("federal_muni"), # Partial match
         "Did you mean"
     )
     expect_null(result)
+    expect_warning(
+        result <- load_gerda_web("federal_muni"),
+        "gerda_data_list"
+    )
 
     expect_warning(
         result <- load_gerda_web("state_unhar"), # Close to 'state_unharm'
         "Did you mean"
     )
     expect_null(result)
+    expect_warning(
+        result <- load_gerda_web("state_unhar"),
+        "gerda_data_list"
+    )
+
+    # Test deprecated federal_muni_harm provides specific message
+    expect_warning(
+        result <- load_gerda_web("federal_muni_harm"),
+        "has been replaced with two boundary-specific versions"
+    )
+    expect_null(result)
+    expect_warning(
+        result <- load_gerda_web("federal_muni_harm"),
+        "federal_muni_harm_21"
+    )
+    expect_warning(
+        result <- load_gerda_web("federal_muni_harm"),
+        "federal_muni_harm_25"
+    )
+    expect_warning(
+        result <- load_gerda_web("federal_muni_harm"),
+        "Please replace"
+    )
+    expect_warning(
+        result <- load_gerda_web("federal_muni_harm"),
+        "gerda_data_list"
+    )
 })
 
 test_that("load_gerda_web validates file_format parameter", {
@@ -165,6 +204,10 @@ test_that("load_gerda_web extension handling edge cases", {
         "File name not found in data dictionary"
     )
     expect_null(result)
+    expect_warning(
+        suppressMessages(result <- load_gerda_web("some_dataset_with_rds_in_name")),
+        "gerda_data_list"
+    )
 
     # Test that the extension detection only looks at the last 4 characters
     expect_warning(
@@ -172,6 +215,10 @@ test_that("load_gerda_web extension handling edge cases", {
         "File name not found in data dictionary"
     )
     expect_null(result)
+    expect_warning(
+        suppressMessages(result <- load_gerda_web("municipal_harm.rds.backup")),
+        "gerda_data_list"
+    )
 })
 
 test_that("load_gerda_web message content validation", {

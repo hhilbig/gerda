@@ -98,28 +98,62 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
     # Check if file_name is in data_dict
 
     if (!file_name %in% data_dictionary$data_name) {
-        # Check if there is a close match in data_dict$data_name
+        # Special handling for deprecated federal_muni_harm dataset
+        if (file_name == "federal_muni_harm") {
+            warning(
+                "The dataset 'federal_muni_harm' has been replaced with two boundary-specific versions:\n",
+                "  - 'federal_muni_harm_21': harmonized to 2021 boundaries\n",
+                "  - 'federal_muni_harm_25': harmonized to 2025 boundaries\n",
+                "Please replace 'federal_muni_harm' in your function call with one of these datasets,\n",
+                "depending on which boundary harmonization you need.\n",
+                "For a complete list of available datasets, see gerda_data_list()."
+            )
+            return(NULL)
+        }
 
+        # Check if there is a close match in data_dict$data_name
         close_matches <- agrep(file_name,
             data_dictionary$data_name,
             max.distance = 0.5, value = TRUE
         )
 
         if (length(close_matches) > 0) {
-            distances <- stringdist::stringdist(file_name,
-                close_matches,
-                method = "lv"
-            )
-            close_matches <- close_matches[order(distances)]
+            # Prioritize matches that start with the same prefix
+            starts_with_prefix <- startsWith(close_matches, file_name)
+            if (any(starts_with_prefix)) {
+                close_matches <- c(
+                    close_matches[starts_with_prefix],
+                    close_matches[!starts_with_prefix]
+                )
+            } else {
+                # If no prefix match, use Levenshtein distance
+                distances <- stringdist::stringdist(file_name,
+                    close_matches,
+                    method = "lv"
+                )
+                close_matches <- close_matches[order(distances)]
+            }
         }
 
         if (length(close_matches) > 0) {
-            warning(
-                "File name not found in data dictionary.\nDid you mean: \"",
-                close_matches[1], "\"?"
-            )
+            if (length(close_matches) > 1) {
+                warning(
+                    "File name not found in data dictionary.\nDid you mean: \"",
+                    close_matches[1], "\" or \"", close_matches[2], "\"?\n",
+                    "For a complete list of available datasets, see gerda_data_list()."
+                )
+            } else {
+                warning(
+                    "File name not found in data dictionary.\nDid you mean: \"",
+                    close_matches[1], "\"?\n",
+                    "For a complete list of available datasets, see gerda_data_list()."
+                )
+            }
         } else {
-            warning("File name not found in data dictionary")
+            warning(
+                "File name not found in data dictionary.\n",
+                "For a complete list of available datasets, see gerda_data_list()."
+            )
         }
         return(NULL)
     }

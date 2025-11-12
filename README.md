@@ -1,6 +1,6 @@
 # GERDA R Package
 
-This package provides tools to download comprehensive datasets of local, state, and federal election results in Germany from 1990 to 2021. The package facilitates access to data on turnout, vote shares for major parties, and demographic information across different levels of government.
+This package provides tools to download comprehensive datasets of local, state, and federal election results in Germany from 1990 to 2025. The package facilitates access to data on turnout, vote shares for major parties, and demographic information across different levels of government.
 
 **Note: This package is currently a work in progress. Comments and suggestions are welcome -- please send to <hhilbig@ucdavis.edu>.**
 
@@ -95,7 +95,7 @@ The dataset includes 20 variables covering:
 - **Education**: School completion rates, students, apprentices
 - **Income**: Median income, purchasing power, low-income households
 
-See `?county_covariates` for full documentation and `covariates_codebook` for a complete data dictionary with variable descriptions, units, and missing data information.
+See `?gerda_covariates` for full documentation and `gerda_covariates_codebook()` for a complete data dictionary with variable descriptions, units, and missing data information.
 
 ## Note
 
