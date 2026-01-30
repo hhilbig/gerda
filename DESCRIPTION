@@ -1,30 +1,33 @@
 Package: gerda
 Title: German Election Database (GERDA)
-Version: 0.4.0
+Version: 0.5.0
 Author: Hanno Hilbig [aut, cre] (<https://orcid.org/0000-0001-5849-9172>)
 Authors@R: 
     person("Hanno", "Hilbig", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5849-9172"))
-Description: Provides tools to download comprehensive datasets of local, 
-    state, and federal election results in Germany from 1990 to 2025. The package 
-    facilitates access to data on turnout, vote shares for major parties, and 
-    demographic information across different levels of government (municipal, state, 
-    and federal). It offers access to geographically harmonized datasets 
-    that account for changes in municipal boundaries over time and incorporate 
-    mail-in voting districts. Users can easily retrieve, clean, and standardize 
-    German electoral data, making it ready for analysis. Data is sourced from 
+Description: Provides tools to download comprehensive datasets of local,
+    state, and federal election results in Germany from 1990 to 2025. The package
+    facilitates access to data on turnout, vote shares for major parties, and
+    demographic information across different levels of government (municipal, state,
+    and federal). It offers access to geographically harmonized datasets
+    that account for changes in municipal boundaries over time and incorporate
+    mail-in voting districts. Includes bundled county-level covariates from INKAR,
+    municipality-level Census 2022 data, and Bundeswahlleiter structural data.
+    Users can easily retrieve, clean, and standardize German electoral data,
+    making it ready for analysis. Data is sourced from
     <https://github.com/awiedem/german_election_data>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 Depends: 
     R (>= 3.5.0)
-Imports: 
-    stringdist, 
-    dplyr, 
-    readr, 
-    knitr, 
+Imports:
+    dplyr,
+    knitr,
+    readr,
+    stats,
+    stringdist,
     tibble
 Suggests: 
     rmarkdown,

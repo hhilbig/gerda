@@ -1,6 +1,16 @@
 #' List of GERDA Data
 #'
-#' This function lists the available GERDA data sets. The purpose of this function is to quickly provide a list of available data sets and their descriptions.
+#' This function lists the available GERDA data sets. The purpose of this
+#' function is to quickly provide a list of available data sets and their
+#' descriptions.
+#'
+#' In addition to downloadable datasets, the package includes bundled
+#' covariate data accessible via dedicated functions:
+#' \itemize{
+#'   \item \code{\link{gerda_covariates}}: County-level INKAR covariates (1995-2022)
+#'   \item \code{\link{gerda_census}}: Municipality-level Census 2022 data
+#'   \item \code{\link{gerda_strukturdaten}}: County-level structural data by election year
+#' }
 #'
 #' @return A tibble containing the available GERDA data with descriptions. When print_table = TRUE,
 #'         the function prints a formatted table to the console and invisibly returns the data tibble.
@@ -13,6 +23,10 @@
 #' @export
 #'
 gerda_data_list <- function(print_table = TRUE) {
+    if (!isTRUE(print_table) && !isFALSE(print_table)) {
+        stop("print_table must be TRUE or FALSE")
+    }
+
     data <- tibble::tribble(
         ~data_name, ~description,
         "municipal_unharm", "Local elections at the municipal level (1990-2020, unharmonized).",

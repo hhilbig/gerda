@@ -2,7 +2,7 @@
 % Please edit documentation in R/party_crosswalk.R
 \name{party_crosswalk}
 \alias{party_crosswalk}
-\title{GERDA}
+\title{Map GERDA Party Names to ParlGov Attributes}
 \usage{
 party_crosswalk(party_gerda, destination)
 }

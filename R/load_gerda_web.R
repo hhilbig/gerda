@@ -23,9 +23,12 @@
 #' @export
 
 load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
+    if (!is.character(file_name) || length(file_name) != 1 || nchar(file_name) == 0) {
+        stop("file_name must be a single non-empty character string")
+    }
+
     # Check if file_name ends with .rds or .csv and handle accordingly
-    original_file_name <- file_name
-    if (nchar(file_name) >= 4) {
+    if (nchar(file_name) > 4) {
         last_4_chars <- substr(file_name, nchar(file_name) - 3, nchar(file_name))
         if (last_4_chars %in% c(".rds", ".csv")) {
             file_name <- substr(file_name, 1, nchar(file_name) - 4)
@@ -169,9 +172,7 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
     }
 
     # Get the url
-    url <- data_dictionary %>%
-        dplyr::filter(.data$data_name == file_name) %>%
-        dplyr::pull(!!sym(paste0(file_format, "_url")))
+    url <- data_dictionary[[paste0(file_format, "_url")]][data_dictionary$data_name == file_name]
 
     if (verbose) {
         message("URL found: ", url)
@@ -182,7 +183,7 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
     data <- tryCatch(
         {
             switch(file_format,
-                "csv" = read_csv(url),
+                "csv" = read_csv(url, show_col_types = FALSE),
                 "rds" = read_rds(url)
             )
         },
@@ -192,8 +193,12 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
         }
     )
 
-    if (verbose && !is.null(data)) {
-        message("Data loaded successfully")
+    if (verbose) {
+        if (!is.null(data)) {
+            message("Data loaded successfully")
+        } else {
+            message("Data loading failed. See warnings for details.")
+        }
     }
 
     return(data)

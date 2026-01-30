@@ -15,7 +15,18 @@ the function prints a formatted table to the console and invisibly returns the d
 When print_table = FALSE, the function directly returns the data tibble.
 }
 \description{
-This function lists the available GERDA data sets. The purpose of this function is to quickly provide a list of available data sets and their descriptions.
+This function lists the available GERDA data sets. The purpose of this
+function is to quickly provide a list of available data sets and their
+descriptions.
+}
+\details{
+In addition to downloadable datasets, the package includes bundled
+covariate data accessible via dedicated functions:
+\itemize{
+\item \code{\link{gerda_covariates}}: County-level INKAR covariates (1995-2022)
+\item \code{\link{gerda_census}}: Municipality-level Census 2022 data
+\item \code{\link{gerda_strukturdaten}}: County-level structural data by election year
+}
 }
 \examples{
 gerda_data_list()
