@@ -31,7 +31,7 @@ The dataset includes 32 socioeconomic and demographic variables:
 \item Labor Market: Unemployment rates (overall, youth, long-term)
 \item Education: School completion rates, students, apprentices
 \item Income: Median income, purchasing power, low-income households
-\item Healthcare: Physician density, hospital beds, pharmacies
+\item Healthcare: Physician density, hospital beds, GP density
 \item Childcare: Coverage rates for under-3 and 3-6 age groups
 \item Housing: Building permits, rent levels, living space
 \item Transport: Cars per capita
