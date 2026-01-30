@@ -7,8 +7,8 @@
 gerda_census()
 }
 \value{
-A data frame with approximately 11,000 rows (one per municipality)
-and 21 columns containing census indicators. See
+A data frame with approximately 10,800 rows (one per municipality)
+and 17 columns containing census indicators. See
 \code{\link{gerda_census_codebook}} for variable descriptions.
 }
 \description{
@@ -24,10 +24,9 @@ The dataset includes:
 \itemize{
 \item Demographics: Population, age structure
 \item Migration: Migration background, foreign nationals
-\item Religion: Catholic, Protestant, Muslim, no affiliation
 \item Households: Average household size
 \item Housing: Dwellings, vacancy, ownership, rents, building types
-\item Education: Share with university degree
+\item Education: Share with tertiary degree
 }
 
 Municipality codes are 8-digit AGS codes. Since the census is a single

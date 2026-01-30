@@ -6,7 +6,6 @@ test_that("gerda_census returns a data frame with expected structure", {
   expect_true("ags" %in% names(census))
   expect_true("population" %in% names(census))
   expect_true("share_migration_bg" %in% names(census))
-  expect_true("share_catholic" %in% names(census))
   expect_true("avg_household_size" %in% names(census))
   expect_true("vacancy_rate" %in% names(census))
   expect_true("share_university_deg" %in% names(census))

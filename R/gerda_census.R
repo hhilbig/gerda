@@ -8,8 +8,8 @@
 #' For most users, we recommend using \code{\link{add_gerda_census}} instead,
 #' which automatically merges census data with GERDA election data.
 #'
-#' @return A data frame with approximately 11,000 rows (one per municipality)
-#'   and 21 columns containing census indicators. See
+#' @return A data frame with approximately 10,800 rows (one per municipality)
+#'   and 17 columns containing census indicators. See
 #'   \code{\link{gerda_census_codebook}} for variable descriptions.
 #'
 #' @details
@@ -17,10 +17,9 @@
 #' \itemize{
 #'   \item Demographics: Population, age structure
 #'   \item Migration: Migration background, foreign nationals
-#'   \item Religion: Catholic, Protestant, Muslim, no affiliation
 #'   \item Households: Average household size
 #'   \item Housing: Dwellings, vacancy, ownership, rents, building types
-#'   \item Education: Share with university degree
+#'   \item Education: Share with tertiary degree
 #' }
 #'
 #' Municipality codes are 8-digit AGS codes. Since the census is a single
@@ -52,7 +51,7 @@ gerda_census <- function() {
 #' Returns the data dictionary for municipality-level Census 2022 indicators.
 #' Provides variable names, labels, units, and data sources.
 #'
-#' @return A data frame with 21 rows documenting all variables in the census
+#' @return A data frame with 17 rows documenting all variables in the census
 #'   dataset.
 #'
 #' @examples
