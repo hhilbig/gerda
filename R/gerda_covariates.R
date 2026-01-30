@@ -12,18 +12,23 @@
 #' \strong{Note}: These covariates are at the county (Kreis) level and should be
 #' merged with county-level GERDA data (e.g., \code{federal_cty_harm}).
 #'
-#' @return A data frame with 11,200 rows and 22 columns containing county-level
+#' @return A data frame with 11,200 rows and 34 columns containing county-level
 #'   covariates for 400 German counties from 1995 to 2022. See
 #'   \code{\link{gerda_covariates_codebook}} for variable descriptions.
 #'
 #' @details
-#' The dataset includes 20 socioeconomic and demographic variables:
+#' The dataset includes 32 socioeconomic and demographic variables:
 #' \itemize{
 #'   \item Demographics: Age structure, foreign population, gender
 #'   \item Economy: GDP, sectoral composition, enterprise structure
 #'   \item Labor Market: Unemployment rates (overall, youth, long-term)
 #'   \item Education: School completion rates, students, apprentices
 #'   \item Income: Median income, purchasing power, low-income households
+#'   \item Healthcare: Physician density, hospital beds, pharmacies
+#'   \item Childcare: Coverage rates for under-3 and 3-6 age groups
+#'   \item Housing: Building permits, rent levels, living space
+#'   \item Transport: Cars per capita
+#'   \item Public Finances: Municipal debt, tax revenue
 #' }
 #'
 #' County codes are formatted as 5-digit AGS codes matching GERDA's harmonized
@@ -63,7 +68,7 @@ gerda_covariates <- function() {
 #' and missing data information for all county-level socioeconomic and
 #' demographic indicators.
 #'
-#' @return A data frame with 22 rows documenting all variables in the county
+#' @return A data frame with 34 rows documenting all variables in the county
 #'   covariates dataset.
 #'
 #' @examples
@@ -114,7 +119,7 @@ gerda_covariates_codebook <- function() {
 #'   contain a column with county or municipal codes (see Details) and
 #'   \code{election_year}.
 #'
-#' @return The input data frame with additional columns for all 20 county-level
+#' @return The input data frame with additional columns for all 32 county-level
 #'   covariates. The number of rows remains unchanged (left join).
 #'
 #' @details
@@ -208,6 +213,10 @@ add_gerda_covariates <- function(election_data) {
 
   if (!has_county_code && !has_ags) {
     stop("election_data must contain either 'county_code' (for county-level data) or 'ags' (for municipal-level data)")
+  }
+
+  if (has_county_code && has_ags) {
+    message("Both 'county_code' and 'ags' found. Using 'county_code' for merge.")
   }
 
   # Get covariates

@@ -1,4 +1,4 @@
-#' GERDA
+#' Map GERDA Party Names to ParlGov Attributes
 #'
 #' @description
 #' This function creates a crosswalk between parties and their corresponding names using the ParlGov view_party table. In cases where the party name is not found in the view_party table, the function returns NA. Note that this function should be run on GERDA party names, and will likely not work on other party naming schemes.

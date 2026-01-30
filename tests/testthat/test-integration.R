@@ -83,7 +83,7 @@ test_that("error handling across functions", {
     # Test that functions handle errors gracefully in integrated scenarios
 
     # Test gerda_data_list with invalid parameters
-    expect_error(gerda_data_list(print_table = "invalid"))
+    expect_error(gerda_data_list(print_table = "invalid"), "print_table must be TRUE or FALSE")
 
     # Test load_gerda_web with results from gerda_data_list
     datasets <- gerda_data_list(print_table = FALSE)

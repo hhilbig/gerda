@@ -7,7 +7,7 @@
 gerda_covariates()
 }
 \value{
-A data frame with 11,200 rows and 22 columns containing county-level
+A data frame with 11,200 rows and 34 columns containing county-level
 covariates for 400 German counties from 1995 to 2022. See
 \code{\link{gerda_covariates_codebook}} for variable descriptions.
 }
@@ -24,13 +24,18 @@ which automatically performs the merge with correct join keys.
 merged with county-level GERDA data (e.g., \code{federal_cty_harm}).
 }
 \details{
-The dataset includes 20 socioeconomic and demographic variables:
+The dataset includes 32 socioeconomic and demographic variables:
 \itemize{
 \item Demographics: Age structure, foreign population, gender
 \item Economy: GDP, sectoral composition, enterprise structure
 \item Labor Market: Unemployment rates (overall, youth, long-term)
 \item Education: School completion rates, students, apprentices
 \item Income: Median income, purchasing power, low-income households
+\item Healthcare: Physician density, hospital beds, pharmacies
+\item Childcare: Coverage rates for under-3 and 3-6 age groups
+\item Housing: Building permits, rent levels, living space
+\item Transport: Cars per capita
+\item Public Finances: Municipal debt, tax revenue
 }
 
 County codes are formatted as 5-digit AGS codes matching GERDA's harmonized
