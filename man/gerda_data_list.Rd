@@ -25,7 +25,6 @@ covariate data accessible via dedicated functions:
 \itemize{
 \item \code{\link{gerda_covariates}}: County-level INKAR covariates (1995-2022)
 \item \code{\link{gerda_census}}: Municipality-level Census 2022 data
-\item \code{\link{gerda_strukturdaten}}: County-level structural data by election year
 }
 }
 \examples{

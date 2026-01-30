@@ -4,11 +4,10 @@ test_that("gerda_census returns a data frame with expected structure", {
   expect_s3_class(census, "data.frame")
   expect_gt(nrow(census), 0)
   expect_true("ags" %in% names(census))
-  expect_true("population" %in% names(census))
-  expect_true("share_migration_bg" %in% names(census))
-  expect_true("avg_household_size" %in% names(census))
-  expect_true("vacancy_rate" %in% names(census))
-  expect_true("share_university_deg" %in% names(census))
+  expect_true("population_census22" %in% names(census))
+  expect_true("share_migration_bg_census22" %in% names(census))
+  expect_true("avg_household_size_census22" %in% names(census))
+  expect_true("vacancy_rate_census22" %in% names(census))
 })
 
 test_that("gerda_census_codebook returns a data frame with expected structure", {
@@ -51,9 +50,9 @@ test_that("add_gerda_census works with municipality-level data", {
   expect_equal(nrow(result), nrow(muni_data))
 
   # Should add census columns
-  expect_true("population" %in% names(result))
-  expect_true("share_migration_bg" %in% names(result))
-  expect_true("vacancy_rate" %in% names(result))
+  expect_true("population_census22" %in% names(result))
+  expect_true("share_migration_bg_census22" %in% names(result))
+  expect_true("vacancy_rate_census22" %in% names(result))
 
   # Original columns should be preserved
   expect_true("votes" %in% names(result))
@@ -77,8 +76,8 @@ test_that("add_gerda_census works with county-level data", {
   # Should keep all original rows
   expect_equal(nrow(result), nrow(county_data))
 
-  # Should add aggregated census columns (prefixed with census_)
-  census_cols <- grep("^census_", names(result), value = TRUE)
+  # Should add aggregated census columns (suffixed with _census22)
+  census_cols <- grep("_census22$", names(result), value = TRUE)
   expect_gt(length(census_cols), 0)
 
   # Original columns should be preserved

@@ -12,7 +12,7 @@ contain a column with county or municipal codes (see Details) and
 \code{election_year}.}
 }
 \value{
-The input data frame with additional columns for all 32 county-level
+The input data frame with additional columns for all 30 county-level
 covariates. The number of rows remains unchanged (left join).
 }
 \description{

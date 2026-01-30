@@ -9,7 +9,6 @@
 #' \itemize{
 #'   \item \code{\link{gerda_covariates}}: County-level INKAR covariates (1995-2022)
 #'   \item \code{\link{gerda_census}}: Municipality-level Census 2022 data
-#'   \item \code{\link{gerda_strukturdaten}}: County-level structural data by election year
 #' }
 #'
 #' @return A tibble containing the available GERDA data with descriptions. When print_table = TRUE,

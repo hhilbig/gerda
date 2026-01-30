@@ -20,21 +20,23 @@ library(gerda)
 
 ## Overview
 
-The `gerda` package provides functions to access and work with GERDA datasets. The German Election Database (GERDA) provides a comprehensive dataset of local, state, and federal election results in Germany. The data is intended to facilitate research on electoral behavior, representation, and political responsiveness at multiple levels of government. All datasets include turnout and vote shares for all major parties. Moreover, GERDA contains geographically harmonized datasets that account for changes in municipal boundaries and mail-in voting districts.
+The `gerda` package provides functions to access and work with GERDA datasets. The German Election Database (GERDA) provides a comprehensive dataset of local, state, and federal election results in Germany. All datasets include turnout and vote shares for all major parties. Moreover, GERDA contains geographically harmonized datasets that account for changes in municipal boundaries and mail-in voting districts. GERDA covers federal, state (*Bundesland*), and municipal (*Kreis* and *Gemeinde*) elections.
 
-GERDA was compiled by Vincent Heddesheimer, Florian Sichart, Andreas Wiedemann and Hanno Hilbig.
+In addition to election results, the package provides county-level socioeconomic covariates from INKAR, municipality-level data from the German Census 2022, and a party crosswalk that maps GERDA party names to standardized ParlGov attributes.
 
-This vignette will introduce you to the main functions of the package and demonstrate how to use them.
+GERDA was compiled by Vincent Heddesheimer, Florian Sichart, Andreas Wiedemann and Hanno Hilbig. For additional information, see also the GERDA website (www.german-elections.com) and the accompanying publication: [doi.org/10.1038/s41597-025-04811-5](https://doi.org/10.1038/s41597-025-04811-5)
+
+This vignette will introduce you to the main functions of the package and demonstrate how to use them. 
 
 ## Available Datasets
 
-To see a list of all available GERDA datasets, you can use the `gerda_data_list()` function:
+To see a list of all available GERDA electoral result datasets, you can use the `gerda_data_list()` function:
 
 ```{r}
 gerda_data_list()
 ```
 
-This function displays a formatted table with the names and descriptions of all available datasets.
+This function displays a formatted table with the names and descriptions of all available datasets. You can use the `file_name` column from this output to specify which dataset you want to load using the `load_gerda_web()` function.
 
 ## Loading Data
 
@@ -47,9 +49,9 @@ municipal_harm_data <- load_gerda_web("municipal_harm", verbose = TRUE, file_for
 
 The `load_gerda_web()` function takes the following parameters:
 
-- `file_name`: The name of the dataset to load (as shown in the `gerda_data_list()` output)
+- `file_name`: A character string with the name of the dataset to load, e.g. `"federal_cty_harm"` (as shown in the `gerda_data_list()` output). The function supports fuzzy matching, so close misspellings will produce a helpful suggestion.
 - `verbose`: If set to `TRUE`, it prints messages about the loading process (default is `FALSE`)
-- `file_format`: Specifies the format of the file to load, either "rds" or "csv" (default is "rds")
+- `file_format`: Specifies the format of the file to load, either `"rds"` or `"csv"` (default is `"rds"`). Both formats return the same tibble, so this choice only affects download size and speed.
 
 ## Example Workflow
 
@@ -69,7 +71,7 @@ federal_cty_harm <- load_gerda_web("federal_cty_harm", verbose = TRUE)
 
 ## County-Level Covariates
 
-The `gerda` package includes county-level socioeconomic and demographic covariates from INKAR (Indikatoren und Karten zur Raum- und Stadtentwicklung). These covariates can be easily merged with GERDA election data to enrich your analyses.
+The `gerda` package includes county-level socioeconomic and demographic covariates from INKAR (Indikatoren und Karten zur Raum- und Stadtentwicklung). These covariates can be easily merged with GERDA election data to enrich your analyses. INKAR data is available from 1995 to 2022, so covariates can be matched to federal elections from 1998 onwards (earlier elections fall outside the INKAR coverage window).
 
 ### Quick Start
 
@@ -82,24 +84,29 @@ library(dplyr)
 merged <- load_gerda_web("federal_cty_harm") %>%
   add_gerda_covariates()
 
-# Your data now includes 20 county-level covariates!
+# Your data now includes 30 county-level covariates!
 ```
 
-This function automatically:
+Under the hood, `add_gerda_covariates()` merges on county code and election year. It automatically:
 
-- Uses the correct join keys
-- Keeps only election years (left join)
-- Validates input data
+- Detects whether the input is county-level or municipal-level data (and extracts county codes from municipal AGS codes if needed)
+- Performs a left join, so all election rows are kept and covariates are added where available
+- Validates that the required columns (`county_code` or `ags`, and `election_year`) are present
 
 ### Available Covariates
 
-The covariates dataset includes 20 variables covering:
+The covariates dataset includes 30 variables across 10 categories (for the full list of variable names, units, and descriptions, see `gerda_covariates_codebook()`):
 
 - **Demographics**: Age structure, foreign population, gender composition
 - **Economy**: GDP per capita, sectoral composition, enterprise structure
 - **Labor Market**: Unemployment rates (overall, youth, long-term)
 - **Education**: School completion rates, students, apprentices
-- **Income**: Median income, purchasing power, low-income households
+- **Income**: Purchasing power, low-income households
+- **Healthcare**: Physician density, hospital beds, GP density
+- **Childcare**: Coverage rates for under-3 and 3-6 age groups
+- **Housing**: Building permits, rent levels, living space
+- **Transport**: Cars per capita
+- **Public Finances**: Municipal debt, tax revenue
 
 ### Viewing the Codebook
 
@@ -138,9 +145,52 @@ merged <- elections %>%
 
 - **Counties**: 400 German counties (Kreise)
 - **Time period**: 1995-2022 (annual data)
-- **Election coverage**: Elections from 1998 onwards have full covariate data
+- **Election coverage**: Elections from 1998 onwards have covariate data
 
-Note: Some covariates have missing values. Use the codebook to check data availability for specific variables before analysis.
+Coverage varies by variable: core indicators (demographics, economy, labor market) are available for all 7 federal election years (1998-2021). Newer INKAR indicators (e.g., childcare, some healthcare variables) are available for 2-3 recent elections only. Consult the codebook's `missing_pct` column to check per-variable availability before analysis.
+
+## Census 2022 Data
+
+The `gerda` package includes municipality-level data from the German Census 2022 (Zensus 2022). This cross-sectional snapshot covers approximately 10,800 municipalities and can be merged with any GERDA election dataset.
+
+The main advantage of this covariate data is that it is observed at the municipal level (unlike the county-level INKAR data). This allows for more fine-grained analyses of local election outcomes. However, the census is a single time point (2022), so it does not vary across election years. This means that the resulting merged dataset will have time-invariant covariates, i.e. each municipality receives the same census values for all election years. Users should not conduct analyses that rely on over-time variation in these covariates.
+
+### Quick Start
+
+```{r, eval=FALSE}
+library(gerda)
+
+# Add census data to municipal-level elections
+muni_merged <- load_gerda_web("federal_muni_harm_21") |>
+  add_gerda_census()
+
+# Also works with county-level data (aggregated from municipalities)
+county_merged <- load_gerda_web("federal_cty_harm") |>
+  add_gerda_census()
+```
+
+### Available Indicators
+
+The census data includes 14 indicators across four categories:
+
+- **Demographics**: Population, age structure (under 18, 18-29, 30-49, 50-64, 65+)
+- **Migration**: Migration background share, foreign nationals share
+- **Households**: Average household size
+- **Housing**: Total dwellings, vacancy rate, ownership rate, average rent per m², single-family home share
+
+Since the census is a 2022 snapshot, the same values are attached to all election years (see also the note above). 
+
+### Viewing the Codebook
+
+```{r, eval=FALSE}
+# Get the census codebook
+census_cb <- gerda_census_codebook()
+print(census_cb)
+```
+
+### Data Coverage
+
+Most census variables have >95% municipality coverage. `avg_household_size_census22` has approximately 12.5% missing values because Destatis suppresses data for small municipalities under its disclosure rules.
 
 ## Party Crosswalk Function
 

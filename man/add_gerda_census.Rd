@@ -45,8 +45,8 @@ election years. The merge is on geography only (no year join).
 For county-level data, municipality-level census data is first aggregated:
 \itemize{
 \item Share variables: Population-weighted means
-\item Count variables (population, total_dwellings): Sums
-\item Other variables (avg_household_size, avg_rent_per_m2): Population-weighted means
+\item Count variables (population_census22, total_dwellings_census22): Sums
+\item Other variables (avg_household_size_census22, avg_rent_per_m2_census22): Population-weighted means
 }
 }
 }
