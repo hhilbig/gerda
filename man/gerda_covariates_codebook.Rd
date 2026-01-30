@@ -7,7 +7,7 @@
 gerda_covariates_codebook()
 }
 \value{
-A data frame with 34 rows documenting all variables in the county
+A data frame with 32 rows documenting all variables in the county
 covariates dataset.
 }
 \description{

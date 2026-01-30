@@ -9,7 +9,7 @@
 #' which automatically merges census data with GERDA election data.
 #'
 #' @return A data frame with approximately 10,800 rows (one per municipality)
-#'   and 17 columns containing census indicators. See
+#'   and 16 columns containing census indicators. See
 #'   \code{\link{gerda_census_codebook}} for variable descriptions.
 #'
 #' @details
@@ -19,7 +19,6 @@
 #'   \item Migration: Migration background, foreign nationals
 #'   \item Households: Average household size
 #'   \item Housing: Dwellings, vacancy, ownership, rents, building types
-#'   \item Education: Share with tertiary degree
 #' }
 #'
 #' Municipality codes are 8-digit AGS codes. Since the census is a single
@@ -51,7 +50,7 @@ gerda_census <- function() {
 #' Returns the data dictionary for municipality-level Census 2022 indicators.
 #' Provides variable names, labels, units, and data sources.
 #'
-#' @return A data frame with 17 rows documenting all variables in the census
+#' @return A data frame with 16 rows documenting all variables in the census
 #'   dataset.
 #'
 #' @examples
@@ -103,8 +102,8 @@ gerda_census_codebook <- function() {
 #' For county-level data, municipality-level census data is first aggregated:
 #' \itemize{
 #'   \item Share variables: Population-weighted means
-#'   \item Count variables (population, total_dwellings): Sums
-#'   \item Other variables (avg_household_size, avg_rent_per_m2): Population-weighted means
+#'   \item Count variables (population_census22, total_dwellings_census22): Sums
+#'   \item Other variables (avg_household_size_census22, avg_rent_per_m2_census22): Population-weighted means
 #' }
 #'
 #' @examples
@@ -129,7 +128,7 @@ gerda_census_codebook <- function() {
 #' @export
 add_gerda_census <- function(election_data) {
   # Avoid NOTE in R CMD check for NSE variables
-  ags <- county_code <- county_code_temp <- population <- NULL
+  ags <- county_code <- county_code_temp <- population_census22 <- NULL
 
   # Validate input
   if (!is.data.frame(election_data)) {
@@ -168,7 +167,7 @@ add_gerda_census <- function(election_data) {
 
     # Identify share vs count columns
     share_cols <- grep("^share_|^avg_|vacancy_rate", names(census_merge), value = TRUE)
-    count_cols <- c("population", "total_dwellings")
+    count_cols <- c("population_census22", "total_dwellings_census22")
 
     # Aggregate to county level
     census_county <- census_merge %>%
@@ -176,14 +175,14 @@ add_gerda_census <- function(election_data) {
       dplyr::group_by(county_code_temp) %>%
       dplyr::summarize(
         dplyr::across(
-          dplyr::all_of(count_cols),
-          ~ sum(.x, na.rm = TRUE),
-          .names = "census_{.col}"
+          dplyr::all_of(share_cols),
+          ~ stats::weighted.mean(.x, w = population_census22, na.rm = TRUE),
+          .names = "{.col}"
         ),
         dplyr::across(
-          dplyr::all_of(share_cols),
-          ~ stats::weighted.mean(.x, w = population, na.rm = TRUE),
-          .names = "census_{.col}"
+          dplyr::all_of(count_cols),
+          ~ sum(.x, na.rm = TRUE),
+          .names = "{.col}"
         ),
         .groups = "drop"
       ) %>%

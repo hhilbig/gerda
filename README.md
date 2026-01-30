@@ -1,6 +1,8 @@
 # GERDA R Package
 
-This package provides tools to download comprehensive datasets of local, state, and federal election results in Germany from 1990 to 2025. The package facilitates access to data on turnout, vote shares for major parties, and demographic information across different levels of government.
+This package provides tools to download comprehensive datasets of local, state, and federal election results in Germany from 1990 to 2025. The package facilitates access to data on turnout, vote shares for major parties, and demographic information across different levels of government. The package also includes county-level socioeconomic covariates from INKAR, municipality-level data from the German Census 2022, and a party crosswalk mapping GERDA party names to ParlGov attributes.
+
+GERDA was compiled by Vincent Heddesheimer, Florian Sichart, Andreas Wiedemann and Hanno Hilbig. For additional information, see the GERDA website (www.german-elections.com) and the accompanying publication: [doi.org/10.1038/s41597-025-04811-5](https://doi.org/10.1038/s41597-025-04811-5)
 
 **Note: This package is currently a work in progress. Comments and suggestions are welcome -- please send to <hhilbig@ucdavis.edu>.**
 
@@ -32,7 +34,7 @@ devtools::install_github("hhilbig/gerda")
 - **`load_gerda_web(file_name, verbose = FALSE, file_format = "rds")`**: This function loads a GERDA dataset from a web source. It takes the following parameters:
   - `file_name`: The name of the dataset to load (see `gerda_data_list()` for available options).
   - `verbose`: If set to `TRUE`, it prints messages about the loading process (default is `FALSE`).
-  - `file_format`: Specifies the format of the file to load, either "rds" or "csv" (default is "rds").
+  - `file_format`: Specifies the format of the file to load, either "rds" or "csv" (default is "rds"). Both formats return the same tibble, so this choice only affects download size and speed.
 
   The function includes fuzzy matching for file names and will suggest close matches if an exact match isn't found.
 
@@ -55,7 +57,7 @@ data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_for
 
 ## County-Level Covariates
 
-The package provides access to socioeconomic and demographic indicators for 400 German counties (1995-2022) from INKAR. These can be easily added to both county-level and municipal-level GERDA election data:
+The package provides access to socioeconomic and demographic indicators for 400 German counties (1995-2022) from INKAR. INKAR data is available from 1995 to 2022, so covariates can be matched to federal elections from 1998 onwards (earlier elections fall outside the INKAR coverage window). These can be easily added to both county-level and municipal-level GERDA election data:
 
 ```R
 library(gerda)
@@ -70,7 +72,7 @@ county_merged <- load_gerda_web("federal_cty_harm") %>%
 muni_merged <- load_gerda_web("federal_muni_harm_21") %>%
   add_gerda_covariates()
 
-# Done! Your data now includes 20 county-level covariates
+# Done! Your data now includes 30 county-level covariates
 ```
 
 For more control, use the accessor functions:
@@ -87,15 +89,51 @@ merged <- elections %>%
   left_join(covs, by = c("county_code" = "county_code", "election_year" = "year"))
 ```
 
-The dataset includes 20 variables covering:
+The dataset includes 30 variables covering:
 
 - **Demographics**: Age structure, foreign population, gender
 - **Economy**: GDP, sectoral composition, enterprise structure
-- **Labor market**: Unemployment rates (overall, youth, long-term)
+- **Labor Market**: Unemployment rates (overall, youth, long-term)
 - **Education**: School completion rates, students, apprentices
-- **Income**: Median income, purchasing power, low-income households
+- **Income**: Purchasing power, low-income households
+- **Healthcare**: Physician density, hospital beds, GP density
+- **Childcare**: Coverage rates for under-3 and 3-6 age groups
+- **Housing**: Building permits, rent levels, living space
+- **Transport**: Cars per capita
+- **Public Finances**: Municipal debt, tax revenue
+
+**Coverage note:** Core variables (demographics, economy, labor market) are available for all election years 1998-2021. Some newer INKAR indicators are available for recent elections only. Check `gerda_covariates_codebook()` for per-variable coverage details.
 
 See `?gerda_covariates` for full documentation and `gerda_covariates_codebook()` for a complete data dictionary with variable descriptions, units, and missing data information.
+
+## Census 2022 Data
+
+The package also provides municipality-level data from the German Census 2022 (Zensus 2022). This cross-sectional snapshot covers approximately 10,800 municipalities and can be merged with any GERDA election dataset. The main advantage of this data is that it is observed at the municipal level (unlike the county-level INKAR data), allowing for more fine-grained analyses of local election outcomes. However, the census is a single time point (2022), so it does not vary across election years -- users should not conduct analyses that rely on over-time variation in these covariates.
+
+```R
+library(gerda)
+
+# Add census data to municipal-level elections
+muni_merged <- load_gerda_web("federal_muni_harm_21") |>
+  add_gerda_census()
+
+# Also works with county-level data (aggregated from municipalities)
+county_merged <- load_gerda_web("federal_cty_harm") |>
+  add_gerda_census()
+```
+
+The census data includes 14 indicators across four categories:
+
+- **Demographics**: Population, age structure (under 18, 18-29, 30-49, 50-64, 65+)
+- **Migration**: Migration background share, foreign nationals share
+- **Households**: Average household size
+- **Housing**: Total dwellings, vacancy rate, ownership rate, average rent per m², single-family home share
+
+Since the census is a 2022 snapshot, the same values are attached to all election years.
+
+**Coverage note:** Most census variables have >95% municipality coverage. `avg_household_size_census22` has approximately 12.5% missing values due to Destatis disclosure rules that suppress data for small municipalities.
+
+See `?gerda_census` for full documentation and `gerda_census_codebook()` for the complete data dictionary.
 
 ## Note
 

@@ -7,7 +7,7 @@
 gerda_census_codebook()
 }
 \value{
-A data frame with 17 rows documenting all variables in the census
+A data frame with 16 rows documenting all variables in the census
 dataset.
 }
 \description{

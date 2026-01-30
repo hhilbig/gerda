@@ -9,3 +9,5 @@
 ^\.gitignore$
 ^\.DS_Store$
 ^.*\.Rcheck$
+^\.claude$
+^CLAUDE\.md$
