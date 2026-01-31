@@ -1,3 +1,20 @@
+# gerda 0.5.0
+
+## New Features
+
+* **Census 2022 module** -- 3 new exported functions for municipality-level demographic data:
+  * `gerda_census()` -- access Census 2022 data (10,786 municipalities, 16 variables)
+  * `gerda_census_codebook()` -- data dictionary for census variables
+  * `add_gerda_census()` -- merge census data with election data (supports both municipality and county level)
+* **Extended INKAR covariates** -- expanded from 20 to 30 variables, adding healthcare, childcare, public finances, and transport categories
+
+## Other Changes
+
+* Added `stats` to Imports (for `weighted.mean()` in county-level census aggregation)
+* Removed Strukturdaten module (functionality consolidated into census and covariates modules)
+* New tests for `gerda_covariates` and `gerda_census` modules
+* Updated vignette and README with census and expanded covariates documentation
+
 # gerda 0.4.0
 
 ## Bug Fixes and Improvements
