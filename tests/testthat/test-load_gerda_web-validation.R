@@ -35,19 +35,22 @@ test_that("load_gerda_web parameter validation", {
         load_gerda_web(NULL, file_format = "rds")
     )
 
-    # Default file_format
+    # Default file_format — skip on CRAN because this triggers a network fetch.
+    skip_on_cran()
     expect_silent({
         suppressWarnings(load_gerda_web("municipal_harm"))
     })
 })
 
 test_that("load_gerda_web verbose parameter works", {
+    skip_on_cran()
     expect_silent({
         suppressWarnings(load_gerda_web("municipal_harm", verbose = FALSE))
     })
 })
 
 test_that("load_gerda_web handles both csv and rds formats", {
+    skip_on_cran()
     expect_silent({
         suppressWarnings(suppressMessages(
             load_gerda_web("municipal_harm", file_format = "csv", verbose = FALSE)

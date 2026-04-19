@@ -1,4 +1,4 @@
-# gerda 0.6.0 (development)
+# gerda 0.6.0
 
 ## New Features
 

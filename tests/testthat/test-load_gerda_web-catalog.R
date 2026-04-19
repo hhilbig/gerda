@@ -73,6 +73,9 @@ for (family in names(catalog_datasets)) {
         fam  <- family
         dsets <- catalog_datasets[[fam]]
         test_that(paste0("load_gerda_web accepts ", fam, " datasets (n=", length(dsets), ")"), {
+            # These tests actually download each dataset from GitHub.
+            # Skip on CRAN to avoid flaky network checks and long runtimes.
+            skip_on_cran()
             for (ds in dsets) {
                 expect_silent({
                     suppressWarnings(suppressMessages(
@@ -97,6 +100,7 @@ test_that("catalog total matches the data_list row count", {
 })
 
 test_that("RDS-only datasets can be requested with file_format='rds'", {
+    skip_on_cran()
     for (ds in rds_only) {
         expect_silent({
             suppressWarnings(suppressMessages(
@@ -110,6 +114,7 @@ test_that("xz-compressed RDS loads (regression: ags_1990_to_2025_crosswalk)", {
     # Some upstream RDS files are xz-compressed, which readr::read_rds cannot
     # stream from a URL. load_gerda_web must download to a tempfile so base
     # readRDS() can auto-detect the compression.
+    skip_on_cran()
     data <- tryCatch(
         suppressWarnings(suppressMessages(
             load_gerda_web("ags_1990_to_2025_crosswalk", file_format = "rds", verbose = FALSE)

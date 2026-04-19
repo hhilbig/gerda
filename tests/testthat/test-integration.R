@@ -9,7 +9,9 @@ test_that("typical workflow: list datasets and understand structure", {
     expect_true(all(c("data_name", "description") %in% colnames(datasets)))
     expect_gt(nrow(datasets), 0)
 
-    # Step 2: Check that dataset names from the list are valid for load_gerda_web
+    # Step 2: Check that dataset names from the list are valid for load_gerda_web.
+    # The calls below actually fetch data; skip on CRAN.
+    skip_on_cran()
     sample_datasets <- head(datasets$data_name, 3) # Test first 3 datasets
 
     for (dataset_name in sample_datasets) {
@@ -85,24 +87,24 @@ test_that("error handling across functions", {
     # Test gerda_data_list with invalid parameters
     expect_error(gerda_data_list(print_table = "invalid"), "print_table must be TRUE or FALSE")
 
-    # Test load_gerda_web with results from gerda_data_list
-    datasets <- gerda_data_list(print_table = FALSE)
-    valid_name <- datasets$data_name[1]
-
-    # Should not produce validation errors
-    expect_silent({
-        suppressWarnings(load_gerda_web(valid_name))
-    })
-
     # Test party_crosswalk with invalid destination from a simulated workflow
     expect_error(
         party_crosswalk(c("cdu", "spd"), "invalid_column"),
         "is not a valid destination"
     )
+
+    # Test load_gerda_web with results from gerda_data_list (downloads on CRAN skip).
+    skip_on_cran()
+    datasets <- gerda_data_list(print_table = FALSE)
+    valid_name <- datasets$data_name[1]
+    expect_silent({
+        suppressWarnings(load_gerda_web(valid_name))
+    })
 })
 
 test_that("data consistency across functions", {
     # Test that the dataset names are consistent between functions
+    skip_on_cran()
 
     # Get dataset names from gerda_data_list
     available_datasets <- gerda_data_list(print_table = FALSE)$data_name
