@@ -271,6 +271,16 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
     # crosswalks), because the streaming reader doesn't auto-detect xz. Reading
     # from disk lets base `readRDS` auto-detect any R-supported compression, and
     # keeps CSV behavior symmetrical.
+    #
+    # Raise the download timeout for the duration of the fetch. R's default
+    # (60s) is too short for some of the larger GERDA files over GitHub-media
+    # on slower connections; users otherwise see sporadic timeouts on the first
+    # pull of files like mayor_panel_annual_harm or federal_muni_harm_21.
+    old_timeout <- getOption("timeout")
+    if (is.null(old_timeout) || old_timeout < 300) {
+        options(timeout = 300)
+        on.exit(options(timeout = old_timeout), add = TRUE)
+    }
     tmp <- tempfile(fileext = paste0(".", file_format))
     on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
     data <- tryCatch(
