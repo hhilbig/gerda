@@ -14,14 +14,8 @@ See `NEWS.md` for the full list.
 
 ## Test environments
 
-- Local: macOS 15.1 (arm64), R 4.5.x
-- R CMD check (`devtools::check()`) — 0 errors, 0 warnings, 0 notes
-- R CMD check --as-cran (local) — results below
-
-_To be filled in before submission:_
-
-- win-builder (`devtools::check_win_devel()`) — pending
-- R-hub (`rhub::check_for_cran()`) — pending
+- Local: macOS 15.1 (arm64), R 4.5.x — `R CMD check --as-cran`: 0 errors, 0 warnings, 0 notes.
+- win-builder (R-devel): tarball uploaded via <https://win-builder.r-project.org/upload.aspx> (the automated `devtools::check_win_devel()` FTP upload was blocked by the submitter's local network). Results will be appended here before the formal CRAN submission.
 
 ## R CMD check results
 
@@ -35,7 +29,13 @@ Examples that call `load_gerda_web()` are wrapped in `\donttest{}` or `\dontrun{
 
 ## Reverse dependencies
 
-No reverse dependencies on CRAN (confirmed via `tools::package_dependencies(reverse = TRUE)` on the released 0.5.0).
+No reverse dependencies on CRAN. Confirmed on 2026-04-19:
+
+```r
+tools::package_dependencies("gerda", reverse = TRUE,
+                            db = available.packages())$gerda
+#> character(0)
+```
 
 ## Contact
 
