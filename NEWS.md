@@ -15,10 +15,31 @@
 * `federal_cty_unharm` now also exposes `county_code` and `election_year` columns, matching the schema used by all other county-level GERDA datasets. This allows the dataset to be piped into `add_gerda_covariates()` without manual renaming.
 * The original `ags` (5-digit county code) and `year` columns remain for backwards compatibility but are **deprecated** and scheduled for removal in **v0.7**. Please update code that references `federal_cty_unharm$ags` or `federal_cty_unharm$year` to use `county_code` and `election_year` instead. A one-time message is printed on each load.
 
+## Bug Fixes
+
+* `load_gerda_web()` now downloads datasets to a tempfile before reading them. This fixes loading of xz-compressed RDS files (e.g. `ags_1990_to_2025_crosswalk`), which `readr::read_rds()` could not stream from a URL.
+* Download timeout is temporarily raised to 300s inside `load_gerda_web()` so the larger GERDA files (`mayor_panel_annual_harm`, `federal_muni_harm_21`) no longer time out on first pull over slower connections. The user's original timeout is restored on exit.
+* Fixed the `add_gerda_covariates()` help example, which grouped on a non-existent `county_code_21` column after merging covariates into municipal data.
+
+## Usability
+
+* `load_gerda_web()` gains an `on_error` argument (`"warn"` default, `"stop"` for pipelines). Set `options(gerda.on_error = "stop")` to flip the default globally. Previous behaviour (warning + `NULL`) is unchanged.
+* `party_crosswalk()` now lists all 21 available destinations in the help page and in its error message. A typo like `party_crosswalk(..., "family_nme")` now tells you exactly which column names are valid.
+* `gerda_data_list(print_table = TRUE)` prints each row on a single uncut line. Dataset pairs like `federal_muni_harm_21` and `federal_muni_harm_25` are now distinguishable by description in narrow terminals.
+* `load_gerda_web()` help now documents that major-party vote-share columns do not sum to 1: the remainder is held by smaller-party columns and the `other` bucket.
+* Vignette gains a "Joining GERDA datasets" section listing the id and time columns for every dataset family, so manual `left_join()` calls don't trip on `year` vs `election_year` or on the municipal `county` column not being a 5-digit AGS code.
+
+## Docs
+
+* `DESCRIPTION` updated to list all six election families and the correct federal coverage window (federal county-level since 1953).
+* `README.md` install section documents `build_vignettes = TRUE` for development installs from GitHub.
+* `knitr` moved from Imports to Suggests (only needed as VignetteBuilder).
+
 ## Tests
 
 * Test suite reorganized: `tests/testthat/test-load_gerda_web.R` split into five focused files (`-validation`, `-fuzzy`, `-extensions`, `-catalog`, `-schema`) to keep concerns separable as the catalog grows.
 * Catalog coverage extended to all 39 exposed datasets, grouped by family.
+* Added regression tests for the xz RDS load, the `federal_cty_unharm` alias + deprecation message, and the new `on_error` argument. Suite grew from 240 to 300 tests.
 
 # gerda 0.4.0
 
