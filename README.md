@@ -21,6 +21,14 @@ install.packages("gerda")                  # from CRAN
 devtools::install_github("hhilbig/gerda")  # development version
 ```
 
+To install the vignette along with the development version, pass `build_vignettes = TRUE`:
+
+```r
+devtools::install_github("hhilbig/gerda", build_vignettes = TRUE)
+```
+
+Then read it with `vignette("gerda")`. The CRAN release ships the vignette by default.
+
 ## Main functions
 
 Data access:
