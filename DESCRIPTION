@@ -1,20 +1,19 @@
 Package: gerda
 Title: German Election Database (GERDA)
-Version: 0.5.0
+Version: 0.6.0
 Author: Hanno Hilbig [aut, cre] (<https://orcid.org/0000-0001-5849-9172>)
 Authors@R: 
     person("Hanno", "Hilbig", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-5849-9172"))
-Description: Provides tools to download comprehensive datasets of local,
-    state, and federal election results in Germany from 1990 to 2025. The package
-    facilitates access to data on turnout, vote shares for major parties, and
-    demographic information across different levels of government (municipal, state,
-    and federal). It offers access to geographically harmonized datasets
-    that account for changes in municipal boundaries over time and incorporate
-    mail-in voting districts. Includes bundled county-level covariates from INKAR
-    and municipality-level Census 2022 data.
-    Users can easily retrieve, clean, and standardize German electoral data,
-    making it ready for analysis. Data is sourced from
+Description: Provides tools to download datasets of German elections
+    covering local, state, federal, mayoral, European Parliament, and county
+    (Kreistag) elections, with federal county-level coverage from 1953 and
+    other families extending through 2025. The package supplies turnout, vote
+    shares, and derived indicators at the municipal and county level, including
+    geographically harmonized datasets that account for changes in municipal
+    boundaries over time and incorporate mail-in voting districts. Bundled data
+    includes county-level INKAR covariates (1995-2022) and municipality-level
+    Zensus 2022 indicators. Data is sourced from
     <https://github.com/awiedem/german_election_data>.
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -24,12 +23,12 @@ Depends:
     R (>= 3.5.0)
 Imports:
     dplyr,
-    knitr,
     readr,
     stats,
     stringdist,
     tibble
-Suggests: 
+Suggests:
+    knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

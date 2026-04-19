@@ -1,26 +1,40 @@
 #' Map GERDA Party Names to ParlGov Attributes
 #'
 #' @description
-#' This function creates a crosswalk between parties and their corresponding names using the ParlGov view_party table. In cases where the party name is not found in the view_party table, the function returns NA. Note that this function should be run on GERDA party names, and will likely not work on other party naming schemes.
+#' Creates a crosswalk between GERDA party names and ParlGov's `view_party` attributes.
+#' If a party name is not found, the corresponding output element is `NA`. This function
+#' expects GERDA party names (lowercase, underscores); other naming schemes will mostly
+#' return `NA`.
 #'
 #' @param party_gerda A character vector containing the GERDA party names to be converted.
-#' @param destination The name of the column in the view_party table to map to.
-#' @return A vector with the mapped party names.
+#' @param destination A single string naming the target column. Available destinations:
+#'   \itemize{
+#'     \item \strong{Names}: `party_name`, `party_name_ascii`, `party_name_short`, `party_name_english`
+#'     \item \strong{Party family}: `family_name`, `family_name_short`
+#'     \item \strong{Ideology scales (ParlGov)}: `left_right`, `state_market`, `liberty_authority`, `eu_anti_pro`
+#'     \item \strong{External ideology scores}: `cmp`, `euprofiler`, `ees`, `castles_mair`, `huber_inglehart`, `ray`, `benoit_laver`, `chess`
+#'     \item \strong{Identifiers}: `country_id`, `party_id`, `family_id`
+#'   }
+#' @return A vector of the same length as `party_gerda` with the mapped values.
 #' @export
 #' @examples
 #' party_crosswalk(c("cdu", "spd", "linke_pds", NA), "left_right")
+#' party_crosswalk(c("cdu", "afd"), "family_name_short")
 #'
 party_crosswalk <- function(party_gerda, destination) {
     lt <- lookup_table
+    available <- setdiff(colnames(lt), "party_gerda")
 
     # Length of destination must be 1
     if (length(destination) != 1) {
-        stop("destination must be single character string")
+        stop("destination must be a single character string. Available destinations: ",
+             paste(available, collapse = ", "))
     }
 
     # Check if destination is a column name of lt
     if (!destination %in% colnames(lt)) {
-        stop("destination must be a column of the view_party table")
+        stop("'", destination, "' is not a valid destination. Available destinations: ",
+             paste(available, collapse = ", "))
     }
 
     # Check if party_gerda is a character vector

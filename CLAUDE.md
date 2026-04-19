@@ -2,6 +2,22 @@
 
 This file provides guidance to Claude Code when working in this repository.
 
+## Related repositories
+
+The GERDA project spans three local repositories that need to stay consistent:
+
+- **This repo** (`gerda`, the R package) — user-facing API, function documentation, release notes.
+- **Data repository** at `/Users/hanno/Documents/GitHub/german_election_data` (hosted on GitHub as `awiedem/german_election_data`) — source of truth for every dataset this package downloads at runtime. Its `data/*/final/` tree is the contract: additions, renames, or schema changes upstream have package-side implications. The script `excluded_code/audit_compliance.R` in this repo is a re-runnable compliance audit that flags drift between the package's data dictionary and the upstream repo.
+- **Project website** at `/Users/hanno/Documents/GitHub/awiedem.github.io` (hosted at <https://www.german-elections.com>) — user-facing project docs. Key pages that reference this package directly: `r-package.md`, `usage_notes.md`, `update-log.md`, `election-data.md`, `dashboard.md`.
+
+When package behaviour changes (new datasets exposed, function signatures changed, deprecations introduced, version bumps), check the website and the data repo's own `README.md` / `docs/` for stale references and update them in the same release. Typical checks:
+
+- Website `r-package.md` and `usage_notes.md` — function signatures, dataset names, installation instructions.
+- Website `update-log.md` — append an entry mirroring this repo's `NEWS.md`.
+- Data repo `README.md` — cross-links back to the R package; confirm dataset counts and the list of available data match.
+
+The audit script handles the package ↔ data-repo alignment automatically. Website alignment is a manual check.
+
 ## Build & Check Commands
 
 - **Full check:** `devtools::check()` or `R CMD build . && R CMD check gerda_*.tar.gz`

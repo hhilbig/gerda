@@ -92,9 +92,11 @@ table(county_data$election_year) # Only election years
 muni_data <- load_gerda_web("federal_muni_harm_21") \%>\%
   add_gerda_covariates()
 
-# Verify: municipalities in same county have same covariate values
+# Verify: municipalities in same county have same covariate values.
+# The county code is the first 5 digits of the 8-digit municipal AGS.
 muni_data \%>\%
-  group_by(county_code_21, election_year) \%>\%
+  mutate(county_code = substr(ags, 1, 5)) \%>\%
+  group_by(county_code, election_year) \%>\%
   summarize(
     n_munis = n(),
     unemp_range = max(unemployment_rate) - min(unemployment_rate)
