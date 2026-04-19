@@ -1,3 +1,25 @@
+# gerda 0.6.0 (development)
+
+## New Features
+
+* Exposed 25 additional datasets via `load_gerda_web()` and `gerda_data_list()`:
+  * **County (Kreistag) elections** (4): `county_elec_unharm`, `county_elec_harm_21`, `county_elec_harm_21_cty`, `county_elec_harm_21_muni`
+  * **European Parliament elections** (2): `european_muni_unharm`, `european_muni_harm`
+  * **Mayoral elections** (7): `mayoral_unharm`, `mayoral_harm`, `mayoral_candidates`, `mayor_panel`, `mayor_panel_harm`, `mayor_panel_annual`, `mayor_panel_annual_harm`
+  * **Boundary-specific harmonizations** (4): `municipal_harm_25`, `state_harm_21`, `state_harm_23`, `state_harm_25`
+  * **Additional crosswalks** (7): `ags_1990_to_2023_crosswalk`, `ags_1990_to_2025_crosswalk`, `crosswalk_ags_2021_to_2023`, `crosswalk_ags_2021_2022_to_2023`, `crosswalk_ags_2023_to_2025` (RDS only), `crosswalk_ags_2023_24_to_2025` (RDS only), `crosswalk_ags_2024_to_2025` (RDS only)
+  * **Alternative-boundary covariates** (1): `ags_area_pop_emp_2023`
+
+## Deprecations
+
+* `federal_cty_unharm` now also exposes `county_code` and `election_year` columns, matching the schema used by all other county-level GERDA datasets. This allows the dataset to be piped into `add_gerda_covariates()` without manual renaming.
+* The original `ags` (5-digit county code) and `year` columns remain for backwards compatibility but are **deprecated** and scheduled for removal in **v0.7**. Please update code that references `federal_cty_unharm$ags` or `federal_cty_unharm$year` to use `county_code` and `election_year` instead. A one-time message is printed on each load.
+
+## Tests
+
+* Test suite reorganized: `tests/testthat/test-load_gerda_web.R` split into five focused files (`-validation`, `-fuzzy`, `-extensions`, `-catalog`, `-schema`) to keep concerns separable as the catalog grows.
+* Catalog coverage extended to all 39 exposed datasets, grouped by family.
+
 # gerda 0.4.0
 
 ## Bug Fixes and Improvements
