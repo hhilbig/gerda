@@ -72,10 +72,15 @@ gerda_data_list <- function(print_table = TRUE) {
     if (!print_table) {
         return(data)
     } else {
-        # Format the table for nice display in the terminal
-        formatted_table <- knitr::kable(data, format = "pipe", align = c("l", "l"))
-        # Print the formatted table
-        cat(formatted_table, sep = "\n")
+        # Print one dataset per line as "name  description" so long descriptions
+        # are never truncated (the previous kable-based output wrapped or
+        # elided, making pairs like federal_muni_harm_21 / _25 indistinguishable
+        # by description in narrow terminals).
+        name_width <- max(nchar(data$data_name)) + 2L
+        for (i in seq_len(nrow(data))) {
+            cat(format(data$data_name[i], width = name_width),
+                data$description[i], "\n", sep = "")
+        }
         invisible(data)
     }
 }
