@@ -5,6 +5,7 @@
 #' @param file_name A character string specifying the name of the file to load. For a list of available data, see \code{\link{gerda_data_list}}.
 #' @param verbose A logical value indicating whether to print additional messages to the console. Default is FALSE.
 #' @param file_format A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".
+#' @param on_error How to handle errors (unknown dataset name, failed download, corrupt file, invalid `file_format`). Either `"warn"` (default) to emit a warning and return `NULL`, or `"stop"` to raise an error. Use `"stop"` inside scripts or pipelines where silent `NULL` returns would produce confusing downstream failures. The global default can also be overridden with `options(gerda.on_error = "stop")`.
 #'
 #' @section Vote-share columns:
 #' Election datasets expose one column per party (e.g. `cdu`, `spd`, `gruene`, `afd`).
@@ -33,9 +34,27 @@
 #' @import readr
 #' @export
 
-load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
+load_gerda_web <- function(file_name,
+                           verbose = FALSE,
+                           file_format = "rds",
+                           on_error = getOption("gerda.on_error", "warn")) {
     if (!is.character(file_name) || length(file_name) != 1 || nchar(file_name) == 0) {
         stop("file_name must be a single non-empty character string")
+    }
+
+    if (!is.character(on_error) || length(on_error) != 1 || !on_error %in% c("warn", "stop")) {
+        stop("on_error must be either \"warn\" or \"stop\"")
+    }
+
+    # Internal helper: every failure path goes through this so the on_error
+    # contract is consistent (warn + NULL, or stop).
+    fail <- function(msg) {
+        if (on_error == "stop") {
+            stop(msg, call. = FALSE)
+        } else {
+            warning(msg, call. = FALSE)
+            return(invisible(NULL))
+        }
     }
 
     # Check if file_name ends with .rds or .csv and handle accordingly
@@ -201,15 +220,14 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
     if (!file_name %in% data_dictionary$data_name) {
         # Special handling for deprecated federal_muni_harm dataset
         if (file_name == "federal_muni_harm") {
-            warning(
+            return(fail(paste0(
                 "The dataset 'federal_muni_harm' has been replaced with two boundary-specific versions:\n",
                 "  - 'federal_muni_harm_21': harmonized to 2021 boundaries\n",
                 "  - 'federal_muni_harm_25': harmonized to 2025 boundaries\n",
                 "Please replace 'federal_muni_harm' in your function call with one of these datasets,\n",
                 "depending on which boundary harmonization you need.\n",
                 "For a complete list of available datasets, see gerda_data_list()."
-            )
-            return(NULL)
+            )))
         }
 
         # Check if there is a close match in data_dict$data_name
@@ -236,27 +254,24 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
             }
         }
 
-        if (length(close_matches) > 0) {
-            if (length(close_matches) > 1) {
-                warning(
-                    "File name not found in data dictionary.\nDid you mean: \"",
-                    close_matches[1], "\" or \"", close_matches[2], "\"?\n",
-                    "For a complete list of available datasets, see gerda_data_list()."
-                )
-            } else {
-                warning(
-                    "File name not found in data dictionary.\nDid you mean: \"",
-                    close_matches[1], "\"?\n",
-                    "For a complete list of available datasets, see gerda_data_list()."
-                )
-            }
+        if (length(close_matches) > 1) {
+            return(fail(paste0(
+                "File name not found in data dictionary.\nDid you mean: \"",
+                close_matches[1], "\" or \"", close_matches[2], "\"?\n",
+                "For a complete list of available datasets, see gerda_data_list()."
+            )))
+        } else if (length(close_matches) == 1) {
+            return(fail(paste0(
+                "File name not found in data dictionary.\nDid you mean: \"",
+                close_matches[1], "\"?\n",
+                "For a complete list of available datasets, see gerda_data_list()."
+            )))
         } else {
-            warning(
+            return(fail(paste0(
                 "File name not found in data dictionary.\n",
                 "For a complete list of available datasets, see gerda_data_list()."
-            )
+            )))
         }
-        return(NULL)
     }
 
     if (verbose) {
@@ -265,8 +280,7 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
 
     # Check if file_format is valid
     if (!file_format %in% c("csv", "rds")) {
-        warning("Invalid file_format. Must be either 'csv' or 'rds'.")
-        return(NULL)
+        return(fail("Invalid file_format. Must be either 'csv' or 'rds'."))
     }
 
     # Get the url
@@ -303,8 +317,8 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
             )
         },
         error = function(e) {
-            warning("Error loading data: ", e$message, "\nThe data may not be available or may have changed. Please contact the package maintainer.")
-            return(NULL)
+            fail(paste0("Error loading data: ", e$message,
+                        "\nThe data may not be available or may have changed. Please contact the package maintainer."))
         }
     )
 

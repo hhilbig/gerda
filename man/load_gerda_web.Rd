@@ -4,7 +4,12 @@
 \alias{load_gerda_web}
 \title{Load GERDA Data}
 \usage{
-load_gerda_web(file_name, verbose = FALSE, file_format = "rds")
+load_gerda_web(
+  file_name,
+  verbose = FALSE,
+  file_format = "rds",
+  on_error = getOption("gerda.on_error", "warn")
+)
 }
 \arguments{
 \item{file_name}{A character string specifying the name of the file to load. For a list of available data, see \code{\link{gerda_data_list}}.}
@@ -12,6 +17,8 @@ load_gerda_web(file_name, verbose = FALSE, file_format = "rds")
 \item{verbose}{A logical value indicating whether to print additional messages to the console. Default is FALSE.}
 
 \item{file_format}{A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".}
+
+\item{on_error}{How to handle errors (unknown dataset name, failed download, corrupt file, invalid \code{file_format}). Either \code{"warn"} (default) to emit a warning and return \code{NULL}, or \code{"stop"} to raise an error. Use \code{"stop"} inside scripts or pipelines where silent \code{NULL} returns would produce confusing downstream failures. The global default can also be overridden with \code{options(gerda.on_error = "stop")}.}
 }
 \value{
 A tibble containing the loaded data, or NULL if the data could not be loaded.
