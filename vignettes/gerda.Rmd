@@ -20,7 +20,7 @@ library(gerda)
 
 ## Overview
 
-The `gerda` package provides functions to access and work with GERDA datasets. The German Election Database (GERDA) provides a comprehensive dataset of local, state, and federal election results in Germany. All datasets include turnout and vote shares for all major parties. Moreover, GERDA contains geographically harmonized datasets that account for changes in municipal boundaries and mail-in voting districts. GERDA covers federal, state (*Bundesland*), and municipal (*Kreis* and *Gemeinde*) elections.
+The `gerda` package provides functions to access and work with GERDA datasets. The German Election Database (GERDA) provides data on German elections spanning federal elections (since 1953 at the county level, 1980 at the municipal level), state (*Landtag*) elections, local (*Kommunal*) elections, mayoral (*Bürgermeister*) elections, European Parliament elections, and county (*Kreistag*) elections. All election datasets include turnout and vote shares for all major parties. GERDA also supplies geographically harmonized datasets that account for changes in municipal boundaries and mail-in voting districts.
 
 In addition to election results, the package provides county-level socioeconomic covariates from INKAR, municipality-level data from the German Census 2022, and a party crosswalk that maps GERDA party names to standardized ParlGov attributes.
 
@@ -68,6 +68,29 @@ gerda_data_list()
 ```{r, eval=FALSE}
 federal_cty_harm <- load_gerda_web("federal_cty_harm", verbose = TRUE)
 ```
+
+## Joining GERDA Datasets
+
+If you are using `add_gerda_covariates()` or `add_gerda_census()`, you can skip this section: the helpers detect the level of your data and use the correct join keys automatically. If you are writing a manual `left_join()` or merging against other sources, the table below shows which identifier and time columns each family carries.
+
+| Dataset family                                                                                        | Geographic id                                      | Time column                  |
+|------------------------------------------------------------------------------------------------------|----------------------------------------------------|------------------------------|
+| `municipal_*`, `state_*`, `federal_muni_*`, `european_muni_*`, `mayoral_*`                            | `ags` (8-digit municipality)                       | `election_year` (+ `election_date` where available) |
+| `federal_cty_harm`                                                                                   | `county_code` (5-digit county)                     | `election_year`              |
+| `federal_cty_unharm`                                                                                 | `county_code` + `ags` alias (see Deprecations)     | `election_year` + `year` alias |
+| `county_elec_*` (with `_cty` suffix)                                                                  | `county_code` (5-digit county)                     | `election_year`              |
+| `county_elec_*` (without `_cty` suffix)                                                               | `ags` (8-digit municipality)                       | `election_year`              |
+| `mayor_panel` / `mayor_panel_harm`                                                                    | `ags` + `person_id`                                | `election_date`              |
+| `mayor_panel_annual` / `mayor_panel_annual_harm`                                                     | `ags` + `person_id`                                | `year`                       |
+| `gerda_covariates()` (INKAR, county-level)                                                            | `county_code` (5-digit county)                     | `year` (not `election_year`) |
+| `gerda_census()` (Zensus 2022, municipality-level)                                                    | `ags` (8-digit municipality)                       | *time-invariant (2022)*      |
+| `ags_crosswalks`, `ags_1990_to_2023_crosswalk`, `ags_1990_to_2025_crosswalk`, `crosswalk_ags_*`       | Pair of AGS codes at source and target vintages    | Vintage is encoded in column names |
+| `cty_crosswalks`                                                                                      | Pair of 5-digit county codes at source and target  | Vintage is in column names   |
+
+Two things to watch for when joining manually:
+
+- `gerda_covariates()` uses `year`, not `election_year`. If you merge it directly into federal election data, you need a rename: `by = c("county_code" = "county_code", "election_year" = "year")`.
+- On municipal-level files, the `county` column is a county name or partial code, not the 5-digit AGS-based county code. Use `substr(ags, 1, 5)` to extract the county key when you want to join against county-level data.
 
 ## County-Level Covariates
 

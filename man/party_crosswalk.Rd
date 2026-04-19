@@ -9,15 +9,26 @@ party_crosswalk(party_gerda, destination)
 \arguments{
 \item{party_gerda}{A character vector containing the GERDA party names to be converted.}
 
-\item{destination}{The name of the column in the view_party table to map to.}
+\item{destination}{A single string naming the target column. Available destinations:
+\itemize{
+\item \strong{Names}: \code{party_name}, \code{party_name_ascii}, \code{party_name_short}, \code{party_name_english}
+\item \strong{Party family}: \code{family_name}, \code{family_name_short}
+\item \strong{Ideology scales (ParlGov)}: \code{left_right}, \code{state_market}, \code{liberty_authority}, \code{eu_anti_pro}
+\item \strong{External ideology scores}: \code{cmp}, \code{euprofiler}, \code{ees}, \code{castles_mair}, \code{huber_inglehart}, \code{ray}, \code{benoit_laver}, \code{chess}
+\item \strong{Identifiers}: \code{country_id}, \code{party_id}, \code{family_id}
+}}
 }
 \value{
-A vector with the mapped party names.
+A vector of the same length as \code{party_gerda} with the mapped values.
 }
 \description{
-This function creates a crosswalk between parties and their corresponding names using the ParlGov view_party table. In cases where the party name is not found in the view_party table, the function returns NA. Note that this function should be run on GERDA party names, and will likely not work on other party naming schemes.
+Creates a crosswalk between GERDA party names and ParlGov's \code{view_party} attributes.
+If a party name is not found, the corresponding output element is \code{NA}. This function
+expects GERDA party names (lowercase, underscores); other naming schemes will mostly
+return \code{NA}.
 }
 \examples{
 party_crosswalk(c("cdu", "spd", "linke_pds", NA), "left_right")
+party_crosswalk(c("cdu", "afd"), "family_name_short")
 
 }
