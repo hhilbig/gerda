@@ -47,16 +47,28 @@ test_that("party_crosswalk handles unknown parties", {
 })
 
 test_that("party_crosswalk validates destination parameter", {
-    # Test invalid destination column
+    # Unknown destination: error names it and lists available destinations.
     expect_error(
         party_crosswalk(c("cdu", "spd"), "nonexistent_column"),
-        "destination must be a column of the view_party table"
+        "is not a valid destination"
+    )
+    expect_error(
+        party_crosswalk(c("cdu", "spd"), "nonexistent_column"),
+        "Available destinations"
+    )
+    expect_error(
+        party_crosswalk(c("cdu", "spd"), "nonexistent_column"),
+        "left_right"
     )
 
-    # Test multiple destination values
+    # Multiple destination values: single-string requirement is still enforced.
     expect_error(
         party_crosswalk(c("cdu", "spd"), c("left_right", "party_name")),
-        "destination must be single character string"
+        "single character string"
+    )
+    expect_error(
+        party_crosswalk(c("cdu", "spd"), c("left_right", "party_name")),
+        "Available destinations"
     )
 })
 

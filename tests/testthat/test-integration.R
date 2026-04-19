@@ -97,7 +97,7 @@ test_that("error handling across functions", {
     # Test party_crosswalk with invalid destination from a simulated workflow
     expect_error(
         party_crosswalk(c("cdu", "spd"), "invalid_column"),
-        "destination must be a column"
+        "is not a valid destination"
     )
 })
 
