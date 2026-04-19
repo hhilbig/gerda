@@ -1,4 +1,6 @@
 test_that("load_gerda_web detects .rds / .csv extensions", {
+    # Triggers a real fetch after stripping the extension; skip on CRAN.
+    skip_on_cran()
     expect_message(
         suppressWarnings(result <- load_gerda_web("municipal_harm.rds")),
         "File extension \\(.rds or .csv\\) not required - adding it is optional"
@@ -22,6 +24,7 @@ test_that("load_gerda_web detects .rds / .csv extensions", {
 })
 
 test_that("load_gerda_web treats extensions as equivalent to bare name", {
+    skip_on_cran()
     test_cases <- c(
         "municipal_harm",
         "municipal_harm.rds",
@@ -51,6 +54,7 @@ test_that("load_gerda_web rejects names that merely contain '.rds'/'.csv'", {
 })
 
 test_that("load_gerda_web extension message content is informative", {
+    skip_on_cran()
     expect_message(
         suppressWarnings(load_gerda_web("municipal_harm.rds", file_format = "rds")),
         "File extension \\(.rds or .csv\\) not required - adding it is optional"

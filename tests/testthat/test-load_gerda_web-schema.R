@@ -2,6 +2,7 @@
 # load for known upstream inconsistencies. These tests hit the network.
 
 test_that("federal_cty_unharm exposes county_code/election_year as aliases while keeping ags/year", {
+    skip_on_cran()
     data <- tryCatch(
         suppressWarnings(suppressMessages(
             load_gerda_web("federal_cty_unharm", file_format = "rds", verbose = FALSE)
@@ -29,6 +30,7 @@ test_that("federal_cty_unharm exposes county_code/election_year as aliases while
 })
 
 test_that("federal_cty_unharm emits a deprecation message on load", {
+    skip_on_cran()
     # Capture messages to confirm the one-time deprecation notice fires.
     msgs <- tryCatch(
         capture.output(
@@ -45,6 +47,7 @@ test_that("federal_cty_unharm emits a deprecation message on load", {
 })
 
 test_that("federal_cty_unharm can be piped into add_gerda_covariates", {
+    skip_on_cran()
     data <- tryCatch(
         suppressWarnings(suppressMessages(
             load_gerda_web("federal_cty_unharm", file_format = "rds", verbose = FALSE)
@@ -63,6 +66,7 @@ test_that("federal_cty_unharm can be piped into add_gerda_covariates", {
 })
 
 test_that("federal_cty_harm still uses county_code and election_year (no rename)", {
+    skip_on_cran()
     data <- tryCatch(
         suppressWarnings(suppressMessages(
             load_gerda_web("federal_cty_harm", file_format = "rds", verbose = FALSE)

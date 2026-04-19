@@ -42,18 +42,20 @@ County codes are formatted as 5-digit AGS codes matching GERDA's harmonized
 county codes (2021 boundaries).
 }
 \examples{
-# Get the covariates data
+# Get the covariates data (bundled, no network call)
 covs <- gerda_covariates()
 
 # Inspect the data
 head(covs)
 summary(covs)
 
-# Manual merge (advanced)
+\donttest{
+# Manual merge (advanced) — downloads election data from GitHub
 library(dplyr)
 elections <- load_gerda_web("federal_cty_harm")
 merged <- elections \%>\%
   left_join(covs, by = c("county_code" = "county_code", "election_year" = "year"))
+}
 
 }
 \seealso{
