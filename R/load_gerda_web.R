@@ -6,6 +6,17 @@
 #' @param verbose A logical value indicating whether to print additional messages to the console. Default is FALSE.
 #' @param file_format A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".
 #'
+#' @section Vote-share columns:
+#' Election datasets expose one column per party (e.g. `cdu`, `spd`, `gruene`, `afd`).
+#' These columns hold the party's share of valid votes and are expressed as
+#' fractions of 1. They do **not** sum to 1 across the named major parties:
+#' the remainder is held by smaller parties with their own columns and, at
+#' the tail, an `other` category. For example, in `federal_cty_harm` for 2021,
+#' `cdu + csu + spd + gruene + fdp + linke_pds + afd` is typically around
+#' 0.91 and ranges roughly 0.78 to 0.97 across counties. To reconstruct a
+#' full 1.0 share, include every party column or use `other` together with
+#' turnout and invalid-vote columns.
+#'
 #' @return A tibble containing the loaded data, or NULL if the data could not be loaded.
 #'
 #' @examples

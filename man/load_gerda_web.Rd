@@ -19,6 +19,19 @@ A tibble containing the loaded data, or NULL if the data could not be loaded.
 \description{
 This function loads GERDA data from a web source.
 }
+\section{Vote-share columns}{
+
+Election datasets expose one column per party (e.g. \code{cdu}, \code{spd}, \code{gruene}, \code{afd}).
+These columns hold the party's share of valid votes and are expressed as
+fractions of 1. They do \strong{not} sum to 1 across the named major parties:
+the remainder is held by smaller parties with their own columns and, at
+the tail, an \code{other} category. For example, in \code{federal_cty_harm} for 2021,
+\code{cdu + csu + spd + gruene + fdp + linke_pds + afd} is typically around
+0.91 and ranges roughly 0.78 to 0.97 across counties. To reconstruct a
+full 1.0 share, include every party column or use \code{other} together with
+turnout and invalid-vote columns.
+}
+
 \examples{
 \donttest{
 # Load harmonized municipal elections data
