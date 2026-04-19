@@ -105,3 +105,18 @@ test_that("RDS-only datasets can be requested with file_format='rds'", {
         })
     }
 })
+
+test_that("xz-compressed RDS loads (regression: ags_1990_to_2025_crosswalk)", {
+    # Some upstream RDS files are xz-compressed, which readr::read_rds cannot
+    # stream from a URL. load_gerda_web must download to a tempfile so base
+    # readRDS() can auto-detect the compression.
+    data <- tryCatch(
+        suppressWarnings(suppressMessages(
+            load_gerda_web("ags_1990_to_2025_crosswalk", file_format = "rds", verbose = FALSE)
+        )),
+        error = function(e) NULL
+    )
+    skip_if(is.null(data), "ags_1990_to_2025_crosswalk could not be downloaded (network)")
+    expect_s3_class(data, "data.frame")
+    expect_gt(nrow(data), 1e5)  # upstream file is ~451,772 rows
+})

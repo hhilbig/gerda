@@ -266,12 +266,19 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
         message("Loading data...")
     }
 
-    # Load the data based on the file format
+    # Download to a tempfile first, then read locally. Streaming `readr::read_rds`
+    # directly from a URL breaks on xz-compressed RDS files (e.g. the 1990->2025
+    # crosswalks), because the streaming reader doesn't auto-detect xz. Reading
+    # from disk lets base `readRDS` auto-detect any R-supported compression, and
+    # keeps CSV behavior symmetrical.
+    tmp <- tempfile(fileext = paste0(".", file_format))
+    on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
     data <- tryCatch(
         {
+            utils::download.file(url, tmp, mode = "wb", quiet = !verbose)
             switch(file_format,
-                "csv" = read_csv(url, show_col_types = FALSE),
-                "rds" = read_rds(url)
+                "csv" = read_csv(tmp, show_col_types = FALSE),
+                "rds" = readRDS(tmp)
             )
         },
         error = function(e) {
