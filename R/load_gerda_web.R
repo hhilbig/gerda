@@ -39,62 +39,149 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
     }
 
     # Load data dict
+    base_url <- "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/"
+    make_csv <- function(path) paste0(base_url, path, ".csv?download=")
+    make_rds <- function(path) paste0(base_url, path, ".rds")
+
+    entries <- list(
+        # Original 14 datasets
+        list("municipal_unharm",
+             "Local elections at the municipal level (1990-2020, unharmonized).",
+             "municipal_elections/final/municipal_unharm"),
+        list("municipal_harm",
+             "Local elections at the municipal level (1990-2020, harmonized).",
+             "municipal_elections/final/municipal_harm"),
+        list("state_unharm",
+             "State elections at the municipal level (2006-2019, unharmonized).",
+             "state_elections/final/state_unharm"),
+        list("state_harm",
+             "State elections at the municipal level (2006-2019, harmonized).",
+             "state_elections/final/state_harm"),
+        list("federal_muni_raw",
+             "Federal elections at the municipal level (1980-2025, raw data).",
+             "federal_elections/municipality_level/final/federal_muni_raw"),
+        list("federal_muni_unharm",
+             "Federal elections at the municipal level (1980-2025, unharmonized).",
+             "federal_elections/municipality_level/final/federal_muni_unharm"),
+        list("federal_muni_harm_21",
+             "Federal elections at the municipal level (1990-2025, harmonized to 2021 boundaries).",
+             "federal_elections/municipality_level/final/federal_muni_harm_21"),
+        list("federal_muni_harm_25",
+             "Federal elections at the municipal level (1990-2025, harmonized to 2025 boundaries).",
+             "federal_elections/municipality_level/final/federal_muni_harm_25"),
+        list("federal_cty_unharm",
+             "Federal elections at the county level (1953-2021, unharmonized).",
+             "federal_elections/county_level/final/federal_cty_unharm"),
+        list("federal_cty_harm",
+             "Federal elections at the county level (1990-2021, harmonized).",
+             "federal_elections/county_level/final/federal_cty_harm"),
+        list("ags_crosswalks",
+             "Crosswalks for municipalities (1990-2025).",
+             "crosswalks/final/ags_crosswalks"),
+        list("cty_crosswalks",
+             "Crosswalks for counties (1990-2025).",
+             "crosswalks/final/cty_crosswalks"),
+        list("ags_area_pop_emp",
+             "Crosswalk covariates (area, population, employment) for municipalities (1990-2025).",
+             "covars_municipality/final/ags_area_pop_emp"),
+        list("cty_area_pop_emp",
+             "Crosswalk covariates (area, population, employment) for counties (1990-2025).",
+             "covars_county/final/cty_area_pop_emp"),
+
+        # County (Kreistag) elections
+        list("county_elec_unharm",
+             "County (Kreistag) elections at the municipal level, unharmonized.",
+             "county_elections/final/county_elec_unharm"),
+        list("county_elec_harm_21",
+             "County (Kreistag) elections, harmonized to 2021 boundaries.",
+             "county_elections/final/county_elec_harm_21"),
+        list("county_elec_harm_21_cty",
+             "County (Kreistag) elections aggregated to county level, harmonized to 2021 boundaries.",
+             "county_elections/final/county_elec_harm_21_cty"),
+        list("county_elec_harm_21_muni",
+             "County (Kreistag) elections at the municipal level, harmonized to 2021 boundaries.",
+             "county_elections/final/county_elec_harm_21_muni"),
+
+        # European Parliament elections
+        list("european_muni_unharm",
+             "European Parliament elections at the municipal level, unharmonized.",
+             "european_elections/final/european_muni_unharm"),
+        list("european_muni_harm",
+             "European Parliament elections at the municipal level, harmonized.",
+             "european_elections/final/european_muni_harm"),
+
+        # Mayoral elections
+        list("mayoral_unharm",
+             "Mayoral election results at the municipal level, unharmonized.",
+             "mayoral_elections/final/mayoral_unharm"),
+        list("mayoral_harm",
+             "Mayoral election results at the municipal level, harmonized.",
+             "mayoral_elections/final/mayoral_harm"),
+        list("mayoral_candidates",
+             "Mayoral candidates (person-level).",
+             "mayoral_elections/final/mayoral_candidates"),
+        list("mayor_panel",
+             "Mayor panel (person-level, one row per mayor-term).",
+             "mayoral_elections/final/mayor_panel"),
+        list("mayor_panel_harm",
+             "Mayor panel (person-level, harmonized to current boundaries).",
+             "mayoral_elections/final/mayor_panel_harm"),
+        list("mayor_panel_annual",
+             "Mayor panel at annual frequency (one row per municipality-year).",
+             "mayoral_elections/final/mayor_panel_annual"),
+        list("mayor_panel_annual_harm",
+             "Mayor panel at annual frequency, harmonized to current boundaries.",
+             "mayoral_elections/final/mayor_panel_annual_harm"),
+
+        # Boundary-specific harmonizations
+        list("municipal_harm_25",
+             "Local elections at the municipal level, harmonized to 2025 boundaries.",
+             "municipal_elections/final/municipal_harm_25"),
+        list("state_harm_21",
+             "State elections at the municipal level, harmonized to 2021 boundaries.",
+             "state_elections/final/state_harm_21"),
+        list("state_harm_23",
+             "State elections at the municipal level, harmonized to 2023 boundaries.",
+             "state_elections/final/state_harm_23"),
+        list("state_harm_25",
+             "State elections at the municipal level, harmonized to 2025 boundaries.",
+             "state_elections/final/state_harm_25"),
+
+        # Additional crosswalks
+        list("ags_1990_to_2023_crosswalk",
+             "Municipality crosswalk: 1990 boundaries to 2023 boundaries.",
+             "crosswalks/final/ags_1990_to_2023_crosswalk"),
+        list("ags_1990_to_2025_crosswalk",
+             "Municipality crosswalk: 1990 boundaries to 2025 boundaries.",
+             "crosswalks/final/ags_1990_to_2025_crosswalk"),
+        list("crosswalk_ags_2021_to_2023",
+             "Municipality crosswalk: AGS 2021 to AGS 2023 (targeted).",
+             "crosswalks/final/crosswalk_ags_2021_to_2023"),
+        list("crosswalk_ags_2021_2022_to_2023",
+             "Municipality crosswalk: AGS 2021 and 2022 to AGS 2023 (targeted).",
+             "crosswalks/final/crosswalk_ags_2021_2022_to_2023"),
+        list("crosswalk_ags_2023_to_2025",
+             "Municipality crosswalk: AGS 2023 to AGS 2025 (targeted; RDS only).",
+             "crosswalks/final/crosswalk_ags_2023_to_2025"),
+        list("crosswalk_ags_2023_24_to_2025",
+             "Municipality crosswalk: AGS 2023 and 2024 to AGS 2025 (targeted; RDS only).",
+             "crosswalks/final/crosswalk_ags_2023_24_to_2025"),
+        list("crosswalk_ags_2024_to_2025",
+             "Municipality crosswalk: AGS 2024 to AGS 2025 (targeted; RDS only).",
+             "crosswalks/final/crosswalk_ags_2024_to_2025"),
+
+        # Alternative-boundary covariates
+        list("ags_area_pop_emp_2023",
+             "Crosswalk covariates (area, population, employment) for municipalities, harmonized to 2023 boundaries.",
+             "covars_municipality/final/ags_area_pop_emp_2023")
+    )
+
     data_dictionary <- data.frame(
-        data_name = c(
-            "municipal_unharm", "municipal_harm", "state_unharm", "state_harm",
-            "federal_muni_raw", "federal_muni_unharm",
-            "federal_muni_harm_21", "federal_muni_harm_25",
-            "federal_cty_unharm", "federal_cty_harm", "ags_crosswalks",
-            "cty_crosswalks", "ags_area_pop_emp", "cty_area_pop_emp"
-        ),
-        description = c(
-            "Local elections at the municipal level (1990-2020, unharmonized).",
-            "Local elections at the municipal level (1990-2020, harmonized).",
-            "State elections at the municipal level (2006-2019, unharmonized).",
-            "State elections at the municipal level (2006-2019, harmonized).",
-            "Federal elections at the municipal level (1980-2025, raw data).",
-            "Federal elections at the municipal level (1980-2025, unharmonized).",
-            "Federal elections at the municipal level (1990-2025, harmonized to 2021 boundaries).",
-            "Federal elections at the municipal level (1990-2025, harmonized to 2025 boundaries).",
-            "Federal elections at the county level (1953-2021, unharmonized).",
-            "Federal elections at the county level (1990-2021, harmonized).",
-            "Crosswalks for municipalities (1990-2025).",
-            "Crosswalks for counties (1990-2025).",
-            "Crosswalk covariates (area, population, employment) for municipalities (1990-2025).",
-            "Crosswalk covariates (area, population, employment) for counties (1990-2025)."
-        ),
-        csv_url = c(
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/municipal_elections/final/municipal_unharm.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/municipal_elections/final/municipal_harm.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/state_elections/final/state_unharm.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/state_elections/final/state_harm.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_raw.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_unharm.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_harm_21.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_harm_25.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/county_level/final/federal_cty_unharm.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/county_level/final/federal_cty_harm.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/crosswalks/final/ags_crosswalks.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/crosswalks/final/cty_crosswalks.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/covars_municipality/final/ags_area_pop_emp.csv?download=",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/covars_county/final/cty_area_pop_emp.csv?download="
-        ),
-        rds_url = c(
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/municipal_elections/final/municipal_unharm.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/municipal_elections/final/municipal_harm.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/state_elections/final/state_unharm.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/state_elections/final/state_harm.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_raw.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_unharm.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_harm_21.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/municipality_level/final/federal_muni_harm_25.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/county_level/final/federal_cty_unharm.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/federal_elections/county_level/final/federal_cty_harm.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/crosswalks/final/ags_crosswalks.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/crosswalks/final/cty_crosswalks.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/covars_municipality/final/ags_area_pop_emp.rds",
-            "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/covars_county/final/cty_area_pop_emp.rds"
-        )
+        data_name   = vapply(entries, `[[`, character(1), 1),
+        description = vapply(entries, `[[`, character(1), 2),
+        csv_url     = vapply(entries, function(e) make_csv(e[[3]]), character(1)),
+        rds_url     = vapply(entries, function(e) make_rds(e[[3]]), character(1)),
+        stringsAsFactors = FALSE
     )
 
 
@@ -192,6 +279,33 @@ load_gerda_web <- function(file_name, verbose = FALSE, file_format = "rds") {
             return(NULL)
         }
     )
+
+    # Normalize schema for known upstream inconsistencies.
+    # federal_cty_unharm ships with 'ags' (a 5-digit county code) and 'year',
+    # while all other county-level datasets use 'county_code' and 'election_year'.
+    # To keep downstream helpers like add_gerda_covariates() working without
+    # breaking existing user code, add 'county_code'/'election_year' as aliases
+    # alongside the original columns. The 'ags' and 'year' aliases are
+    # deprecated and scheduled for removal in v0.7.
+    if (!is.null(data) && file_name == "federal_cty_unharm") {
+        added_alias <- FALSE
+        if ("ags" %in% names(data) && !"county_code" %in% names(data)) {
+            data$county_code <- data$ags
+            added_alias <- TRUE
+        }
+        if ("year" %in% names(data) && !"election_year" %in% names(data)) {
+            data$election_year <- data$year
+            added_alias <- TRUE
+        }
+        if (added_alias) {
+            message(
+                "Note: 'federal_cty_unharm' now also provides 'county_code' and 'election_year' ",
+                "to match other county-level datasets. The upstream 'ags' and 'year' columns ",
+                "remain for backwards compatibility but are deprecated and will be removed in v0.7. ",
+                "Please migrate your code to the new column names."
+            )
+        }
+    }
 
     if (verbose) {
         if (!is.null(data)) {
