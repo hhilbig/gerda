@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code when working in this repository.
 
+> **This is an R *package*, not a research project.** The shared research-root
+> `../CLAUDE.md` conventions (`pacman::p_load()`, `here()`, `theme_hanno()`,
+> `.rds`/`.csv` data formats) do **not** apply here — follow standard R-package
+> practice (DESCRIPTION `Imports:`, roxygen2, testthat) as documented below.
+
 ## Related repositories
 
 The GERDA project spans three local repositories that need to stay consistent:
