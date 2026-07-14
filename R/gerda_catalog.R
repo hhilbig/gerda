@@ -14,8 +14,8 @@
 #'   \item{election_type}{One of \code{municipal}, \code{state}, \code{federal},
 #'     \code{county-kreistag}, \code{european}, \code{mayoral}, \code{crosswalk},
 #'     \code{covariate}.}
-#'   \item{geographic_level}{\code{municipality}, \code{county}, or
-#'     \code{person}.}
+#'   \item{geographic_level}{\code{municipality}, \code{county},
+#'     \code{wahlkreis} (Bundestag constituency), or \code{person}.}
 #'   \item{year_start, year_end}{Election year range (integer), or \code{NA}
 #'     where the description does not state an explicit range (e.g. crosswalks,
 #'     covariates, and harmonized files without a stated span).}
@@ -113,6 +113,18 @@ gerda_catalog <- function() {
            "Federal elections at the county level (1990-2021, harmonized).",
            "federal_elections/county_level/final/federal_cty_harm",
            "federal", "county", 1990, 2021, "harmonized"),
+        ds("federal_wkr_unharm",
+           "Federal elections at the Wahlkreis (constituency) level (2002-2025, unharmonized).",
+           "federal_elections/wahlkreis_level/final/federal_wkr_unharm",
+           "federal", "wahlkreis", 2002, 2025, "unharmonized"),
+        ds("federal_wkr_unharm_long",
+           "Federal elections at the Wahlkreis level (2002-2025), long format with vote counts.",
+           "federal_elections/wahlkreis_level/final/federal_wkr_unharm_long",
+           "federal", "wahlkreis", 2002, 2025, "unharmonized"),
+        ds("federal_wkr_2021_on_2025",
+           "Federal 2021 result recomputed onto the 2025 Wahlkreis boundaries (official recomputation).",
+           "federal_elections/wahlkreis_level/final/federal_wkr_2021_on_2025",
+           "federal", "wahlkreis", 2021, 2021, "2025"),
 
         # County (Kreistag) elections
         ds("county_elec_unharm",
@@ -181,6 +193,10 @@ gerda_catalog <- function() {
            "Crosswalks for counties (1990-2025).",
            "crosswalks/final/cty_crosswalks",
            "crosswalk", "county"),
+        ds("wkr_2021_to_2025_crosswalk",
+           "Bundestag Wahlkreis crosswalk: 2021 to 2025 (unchanged / redrawn / new).",
+           "federal_elections/wahlkreis_level/final/wkr_2021_to_2025_crosswalk",
+           "crosswalk", "wahlkreis"),
         ds("ags_1990_to_2023_crosswalk",
            "Municipality crosswalk: 1990 boundaries to 2023 boundaries.",
            "crosswalks/final/ags_1990_to_2023_crosswalk",

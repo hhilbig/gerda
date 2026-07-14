@@ -34,7 +34,7 @@ description. Use \code{print_table = FALSE} to access these columns:
 \describe{
 \item{election_type}{\code{municipal}, \code{state}, \code{federal}, \code{county-kreistag},
 \code{european}, \code{mayoral}, \code{crosswalk}, or \code{covariate}.}
-\item{geographic_level}{\code{municipality}, \code{county}, or \code{person}.}
+\item{geographic_level}{\code{municipality}, \code{county}, \code{wahlkreis}, or \code{person}.}
 \item{year_start, year_end}{Election year range, or \code{NA} where the
 dataset has no explicit stated span (e.g. crosswalks and covariates).}
 \item{boundary}{Harmonization target (\code{unharmonized}, \code{harmonized},

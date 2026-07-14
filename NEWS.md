@@ -2,6 +2,11 @@
 
 ## New Features
 
+* Exposed federal elections at the **Wahlkreis (constituency) level** — a new geographic level covering all 299 Bundestag constituencies for 2002-2025:
+  * `federal_wkr_unharm` — vote shares per Wahlkreis x election x vote (Erst/Zweitstimme), GERDA-style wide format.
+  * `federal_wkr_unharm_long` — the count-level long version.
+  * `federal_wkr_2021_on_2025` — the official recomputation of the 2021 result onto the 2025 Wahlkreis boundaries (previous-election district strength on current boundaries).
+  * `wkr_2021_to_2025_crosswalk` — the 2021->2025 constituency crosswalk with `unchanged` / `redrawn` / `new` categories.
 * `load_gerda_web()` gains four arguments for more robust downloads (all with `getOption()` defaults so they can be set globally):
   * `timeout` (default `getOption("gerda.timeout", 300)`) makes the previously hard-coded download timeout configurable.
   * `max_retries` (default `getOption("gerda.max_retries", 2)`) retries failed downloads with exponential backoff, so up to three attempts are made before giving up.
