@@ -4,7 +4,7 @@
 test_that("gerda_catalog() has the expected shape", {
     cat <- gerda_catalog()
     expect_s3_class(cat, "data.frame")
-    expect_equal(nrow(cat), 39)
+    expect_equal(nrow(cat), 43)
     expect_setequal(
         colnames(cat),
         c("data_name", "description", "path", "election_type",
@@ -26,7 +26,7 @@ test_that("catalog metadata values are in their allowed sets", {
         "european", "mayoral", "crosswalk", "covariate"
     )))
     expect_true(all(cat$geographic_level %in%
-        c("municipality", "county", "person")))
+        c("municipality", "county", "wahlkreis", "person")))
     expect_true(all(cat$boundary %in% c(
         "unharmonized", "harmonized", "current", "raw",
         "2021", "2023", "2025", NA_character_

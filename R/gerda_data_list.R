@@ -16,7 +16,7 @@
 #' \describe{
 #'   \item{election_type}{`municipal`, `state`, `federal`, `county-kreistag`,
 #'     `european`, `mayoral`, `crosswalk`, or `covariate`.}
-#'   \item{geographic_level}{`municipality`, `county`, or `person`.}
+#'   \item{geographic_level}{`municipality`, `county`, `wahlkreis`, or `person`.}
 #'   \item{year_start, year_end}{Election year range, or `NA` where the
 #'     dataset has no explicit stated span (e.g. crosswalks and covariates).}
 #'   \item{boundary}{Harmonization target (`unharmonized`, `harmonized`,

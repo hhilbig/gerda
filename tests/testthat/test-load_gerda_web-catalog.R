@@ -25,6 +25,11 @@ catalog_datasets <- list(
         "federal_cty_unharm",
         "federal_cty_harm"
     ),
+    federal_wkr = c(
+        "federal_wkr_unharm",
+        "federal_wkr_unharm_long",
+        "federal_wkr_2021_on_2025"
+    ),
     county = c(
         "county_elec_unharm",
         "county_elec_harm_21",
@@ -47,6 +52,7 @@ catalog_datasets <- list(
     crosswalks = c(
         "ags_crosswalks",
         "cty_crosswalks",
+        "wkr_2021_to_2025_crosswalk",
         "ags_1990_to_2023_crosswalk",
         "ags_1990_to_2025_crosswalk",
         "crosswalk_ags_2021_to_2023",
