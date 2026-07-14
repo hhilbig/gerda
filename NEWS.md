@@ -1,3 +1,31 @@
+# gerda 0.7.0
+
+## New Features
+
+* Exposed federal elections at the **Wahlkreis (constituency) level** — a new geographic level covering all 299 Bundestag constituencies for 2002-2025:
+  * `federal_wkr_unharm` — vote shares per Wahlkreis x election x vote (Erst/Zweitstimme), GERDA-style wide format.
+  * `federal_wkr_unharm_long` — the count-level long version.
+  * `federal_wkr_2021_on_2025` — the official recomputation of the 2021 result onto the 2025 Wahlkreis boundaries (previous-election district strength on current boundaries).
+  * `wkr_2021_to_2025_crosswalk` — the 2021->2025 constituency crosswalk with `unchanged` / `redrawn` / `new` categories.
+* `load_gerda_web()` gains four arguments for more robust downloads (all with `getOption()` defaults so they can be set globally):
+  * `timeout` (default `getOption("gerda.timeout", 300)`) makes the previously hard-coded download timeout configurable.
+  * `max_retries` (default `getOption("gerda.max_retries", 2)`) retries failed downloads with exponential backoff, so up to three attempts are made before giving up.
+  * `cache` (default `getOption("gerda.cache", FALSE)`) caches downloaded datasets on disk and reuses them on later calls instead of re-downloading. This is opt-in so the package never writes to user filespace without consent. Reusing a cached ~4 MB file is roughly 85x faster than re-downloading it, and the saving is far larger for the multi-hundred-MB harmonized panels.
+  * `refresh` (default `FALSE`) forces a fresh download, updating the cache.
+* New exported helpers `gerda_cache_dir()` and `clear_gerda_cache()` inspect and purge the download cache (location follows `tools::R_user_dir()` and honours `R_USER_CACHE_DIR`).
+* GERDA data is served through Git LFS. `load_gerda_web()` now detects when a download returns a Git LFS pointer file instead of the real data (e.g. after a failed media redirect) and returns an informative, retryable error instead of a cryptic parse failure.
+* `gerda_data_list(print_table = FALSE)` now returns structured metadata columns in addition to `data_name` and `description`: `election_type`, `geographic_level`, `year_start`, `year_end`, `boundary`, `formats`, and `candidate_info`. The printed table is unchanged.
+* Requesting an unavailable format (e.g. `file_format = "csv"` for the RDS-only targeted crosswalks) now fails with a clear message naming the available format instead of hitting a 404.
+
+## Internal
+
+* The dataset catalog is now defined once in an internal `gerda_catalog()` function and consumed by both `load_gerda_web()` and `gerda_data_list()`, eliminating the previously hand-maintained duplicate lists that could drift.
+* `DESCRIPTION` now declares `tools` and `utils` in Imports (used for `R_user_dir()` and `download.file()`).
+
+## Deprecations
+
+* The removal of the deprecated `federal_cty_unharm` `ags` and `year` columns, announced in 0.6.0 for v0.7, is deferred to **v0.8**. The `county_code`/`election_year` aliases remain the recommended columns; the originals are still available.
+
 # gerda 0.6.0
 
 ## New Features
