@@ -110,6 +110,21 @@ test_that("RDS-only datasets can be requested with file_format='rds'", {
     }
 })
 
+test_that("requesting csv for an RDS-only dataset fails informatively", {
+    # Fails on the format guard before any download, so this runs offline.
+    for (ds in rds_only) {
+        expect_warning(
+            res <- load_gerda_web(ds, file_format = "csv"),
+            "not available in 'csv' format"
+        )
+        expect_null(res)
+        expect_error(
+            load_gerda_web(ds, file_format = "csv", on_error = "stop"),
+            "not available in 'csv' format"
+        )
+    }
+})
+
 test_that("xz-compressed RDS loads (regression: ags_1990_to_2025_crosswalk)", {
     # Some upstream RDS files are xz-compressed, which readr::read_rds cannot
     # stream from a URL. load_gerda_web must download to a tempfile so base

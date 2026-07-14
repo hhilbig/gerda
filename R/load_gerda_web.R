@@ -6,6 +6,10 @@
 #' @param verbose A logical value indicating whether to print additional messages to the console. Default is FALSE.
 #' @param file_format A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".
 #' @param on_error How to handle errors (unknown dataset name, failed download, corrupt file, invalid `file_format`). Either `"warn"` (default) to emit a warning and return `NULL`, or `"stop"` to raise an error. Use `"stop"` inside scripts or pipelines where silent `NULL` returns would produce confusing downstream failures. The global default can also be overridden with `options(gerda.on_error = "stop")`.
+#' @param timeout Download timeout in seconds. Defaults to `getOption("gerda.timeout", 300)`. The value is applied only for the duration of the download (raising R's default of 60s, which is too short for the larger GERDA files) and restored afterwards.
+#' @param max_retries Number of additional download attempts after the first, with exponential backoff, if a download fails or returns a Git LFS pointer instead of data. Defaults to `getOption("gerda.max_retries", 2)` (so up to three attempts in total).
+#' @param cache Logical; if `TRUE`, downloaded datasets are cached on disk (in `gerda_cache_dir()`) and reused on subsequent calls instead of being re-downloaded. Defaults to `getOption("gerda.cache", FALSE)`. Caching is opt-in so the package never writes to user filespace without consent. See [clear_gerda_cache()] to purge the cache.
+#' @param refresh Logical; if `TRUE`, ignore any cached copy and force a fresh download (updating the cache when `cache = TRUE`). Default is `FALSE`.
 #'
 #' @section Vote-share columns:
 #' Election datasets expose one column per party (e.g. `cdu`, `spd`, `gruene`, `afd`).
@@ -20,6 +24,9 @@
 #'
 #' @return A tibble containing the loaded data, or NULL if the data could not be loaded.
 #'
+#' @seealso [gerda_data_list()] for the dataset catalog, [clear_gerda_cache()]
+#'   and [gerda_cache_dir()] for cache management.
+#'
 #' @examples
 #' \donttest{
 #' # Load harmonized municipal elections data
@@ -27,6 +34,9 @@
 #'
 #' # Load federal election data harmonized to 2025 boundaries (includes 2025 election)
 #' data_federal_2025 <- load_gerda_web("federal_muni_harm_25", verbose = TRUE, file_format = "rds")
+#'
+#' # Cache the download so repeated calls in the same project reuse it
+#' data_federal_2025 <- load_gerda_web("federal_muni_harm_25", cache = TRUE)
 #' }
 #'
 #' @import dplyr
@@ -37,13 +47,33 @@
 load_gerda_web <- function(file_name,
                            verbose = FALSE,
                            file_format = "rds",
-                           on_error = getOption("gerda.on_error", "warn")) {
+                           on_error = getOption("gerda.on_error", "warn"),
+                           timeout = getOption("gerda.timeout", 300),
+                           max_retries = getOption("gerda.max_retries", 2),
+                           cache = getOption("gerda.cache", FALSE),
+                           refresh = FALSE) {
     if (!is.character(file_name) || length(file_name) != 1 || nchar(file_name) == 0) {
         stop("file_name must be a single non-empty character string")
     }
 
     if (!is.character(on_error) || length(on_error) != 1 || !on_error %in% c("warn", "stop")) {
         stop("on_error must be either \"warn\" or \"stop\"")
+    }
+
+    if (!is.numeric(timeout) || length(timeout) != 1 || is.na(timeout) || timeout <= 0) {
+        stop("timeout must be a single positive number (seconds)")
+    }
+
+    if (!is.numeric(max_retries) || length(max_retries) != 1 || is.na(max_retries) || max_retries < 0) {
+        stop("max_retries must be a single non-negative number")
+    }
+
+    if (!is.logical(cache) || length(cache) != 1 || is.na(cache)) {
+        stop("cache must be a single logical value (TRUE or FALSE)")
+    }
+
+    if (!is.logical(refresh) || length(refresh) != 1 || is.na(refresh)) {
+        stop("refresh must be a single logical value (TRUE or FALSE)")
     }
 
     # Internal helper: every failure path goes through this so the on_error
@@ -68,152 +98,18 @@ load_gerda_web <- function(file_name,
         }
     }
 
-    # Load data dict
+    # Build the data dictionary from the single source of truth (gerda_catalog()),
+    # deriving the download URLs from each dataset's repository path.
     base_url <- "https://github.com/awiedem/german_election_data/raw/refs/heads/main/data/"
-    make_csv <- function(path) paste0(base_url, path, ".csv?download=")
-    make_rds <- function(path) paste0(base_url, path, ".rds")
-
-    entries <- list(
-        # Original 14 datasets
-        list("municipal_unharm",
-             "Local elections at the municipal level (1990-2020, unharmonized).",
-             "municipal_elections/final/municipal_unharm"),
-        list("municipal_harm",
-             "Local elections at the municipal level (1990-2020, harmonized).",
-             "municipal_elections/final/municipal_harm"),
-        list("state_unharm",
-             "State elections at the municipal level (2006-2019, unharmonized).",
-             "state_elections/final/state_unharm"),
-        list("state_harm",
-             "State elections at the municipal level (2006-2019, harmonized).",
-             "state_elections/final/state_harm"),
-        list("federal_muni_raw",
-             "Federal elections at the municipal level (1980-2025, raw data).",
-             "federal_elections/municipality_level/final/federal_muni_raw"),
-        list("federal_muni_unharm",
-             "Federal elections at the municipal level (1980-2025, unharmonized).",
-             "federal_elections/municipality_level/final/federal_muni_unharm"),
-        list("federal_muni_harm_21",
-             "Federal elections at the municipal level (1990-2025, harmonized to 2021 boundaries).",
-             "federal_elections/municipality_level/final/federal_muni_harm_21"),
-        list("federal_muni_harm_25",
-             "Federal elections at the municipal level (1990-2025, harmonized to 2025 boundaries).",
-             "federal_elections/municipality_level/final/federal_muni_harm_25"),
-        list("federal_cty_unharm",
-             "Federal elections at the county level (1953-2021, unharmonized).",
-             "federal_elections/county_level/final/federal_cty_unharm"),
-        list("federal_cty_harm",
-             "Federal elections at the county level (1990-2021, harmonized).",
-             "federal_elections/county_level/final/federal_cty_harm"),
-        list("ags_crosswalks",
-             "Crosswalks for municipalities (1990-2025).",
-             "crosswalks/final/ags_crosswalks"),
-        list("cty_crosswalks",
-             "Crosswalks for counties (1990-2025).",
-             "crosswalks/final/cty_crosswalks"),
-        list("ags_area_pop_emp",
-             "Crosswalk covariates (area, population, employment) for municipalities (1990-2025).",
-             "covars_municipality/final/ags_area_pop_emp"),
-        list("cty_area_pop_emp",
-             "Crosswalk covariates (area, population, employment) for counties (1990-2025).",
-             "covars_county/final/cty_area_pop_emp"),
-
-        # County (Kreistag) elections
-        list("county_elec_unharm",
-             "County (Kreistag) elections at the municipal level, unharmonized.",
-             "county_elections/final/county_elec_unharm"),
-        list("county_elec_harm_21",
-             "County (Kreistag) elections, harmonized to 2021 boundaries.",
-             "county_elections/final/county_elec_harm_21"),
-        list("county_elec_harm_21_cty",
-             "County (Kreistag) elections aggregated to county level, harmonized to 2021 boundaries.",
-             "county_elections/final/county_elec_harm_21_cty"),
-        list("county_elec_harm_21_muni",
-             "County (Kreistag) elections at the municipal level, harmonized to 2021 boundaries.",
-             "county_elections/final/county_elec_harm_21_muni"),
-
-        # European Parliament elections
-        list("european_muni_unharm",
-             "European Parliament elections at the municipal level, unharmonized.",
-             "european_elections/final/european_muni_unharm"),
-        list("european_muni_harm",
-             "European Parliament elections at the municipal level, harmonized.",
-             "european_elections/final/european_muni_harm"),
-
-        # Mayoral elections
-        list("mayoral_unharm",
-             "Mayoral election results at the municipal level, unharmonized.",
-             "mayoral_elections/final/mayoral_unharm"),
-        list("mayoral_harm",
-             "Mayoral election results at the municipal level, harmonized.",
-             "mayoral_elections/final/mayoral_harm"),
-        list("mayoral_candidates",
-             "Mayoral candidates (person-level).",
-             "mayoral_elections/final/mayoral_candidates"),
-        list("mayor_panel",
-             "Mayor panel (person-level, one row per mayor-term).",
-             "mayoral_elections/final/mayor_panel"),
-        list("mayor_panel_harm",
-             "Mayor panel (person-level, harmonized to current boundaries).",
-             "mayoral_elections/final/mayor_panel_harm"),
-        list("mayor_panel_annual",
-             "Mayor panel at annual frequency (one row per municipality-year).",
-             "mayoral_elections/final/mayor_panel_annual"),
-        list("mayor_panel_annual_harm",
-             "Mayor panel at annual frequency, harmonized to current boundaries.",
-             "mayoral_elections/final/mayor_panel_annual_harm"),
-
-        # Boundary-specific harmonizations
-        list("municipal_harm_25",
-             "Local elections at the municipal level, harmonized to 2025 boundaries.",
-             "municipal_elections/final/municipal_harm_25"),
-        list("state_harm_21",
-             "State elections at the municipal level, harmonized to 2021 boundaries.",
-             "state_elections/final/state_harm_21"),
-        list("state_harm_23",
-             "State elections at the municipal level, harmonized to 2023 boundaries.",
-             "state_elections/final/state_harm_23"),
-        list("state_harm_25",
-             "State elections at the municipal level, harmonized to 2025 boundaries.",
-             "state_elections/final/state_harm_25"),
-
-        # Additional crosswalks
-        list("ags_1990_to_2023_crosswalk",
-             "Municipality crosswalk: 1990 boundaries to 2023 boundaries.",
-             "crosswalks/final/ags_1990_to_2023_crosswalk"),
-        list("ags_1990_to_2025_crosswalk",
-             "Municipality crosswalk: 1990 boundaries to 2025 boundaries.",
-             "crosswalks/final/ags_1990_to_2025_crosswalk"),
-        list("crosswalk_ags_2021_to_2023",
-             "Municipality crosswalk: AGS 2021 to AGS 2023 (targeted).",
-             "crosswalks/final/crosswalk_ags_2021_to_2023"),
-        list("crosswalk_ags_2021_2022_to_2023",
-             "Municipality crosswalk: AGS 2021 and 2022 to AGS 2023 (targeted).",
-             "crosswalks/final/crosswalk_ags_2021_2022_to_2023"),
-        list("crosswalk_ags_2023_to_2025",
-             "Municipality crosswalk: AGS 2023 to AGS 2025 (targeted; RDS only).",
-             "crosswalks/final/crosswalk_ags_2023_to_2025"),
-        list("crosswalk_ags_2023_24_to_2025",
-             "Municipality crosswalk: AGS 2023 and 2024 to AGS 2025 (targeted; RDS only).",
-             "crosswalks/final/crosswalk_ags_2023_24_to_2025"),
-        list("crosswalk_ags_2024_to_2025",
-             "Municipality crosswalk: AGS 2024 to AGS 2025 (targeted; RDS only).",
-             "crosswalks/final/crosswalk_ags_2024_to_2025"),
-
-        # Alternative-boundary covariates
-        list("ags_area_pop_emp_2023",
-             "Crosswalk covariates (area, population, employment) for municipalities, harmonized to 2023 boundaries.",
-             "covars_municipality/final/ags_area_pop_emp_2023")
-    )
-
+    catalog <- gerda_catalog()
     data_dictionary <- data.frame(
-        data_name   = vapply(entries, `[[`, character(1), 1),
-        description = vapply(entries, `[[`, character(1), 2),
-        csv_url     = vapply(entries, function(e) make_csv(e[[3]]), character(1)),
-        rds_url     = vapply(entries, function(e) make_rds(e[[3]]), character(1)),
+        data_name   = catalog$data_name,
+        description = catalog$description,
+        csv_url     = paste0(base_url, catalog$path, ".csv?download="),
+        rds_url     = paste0(base_url, catalog$path, ".rds"),
+        formats     = catalog$formats,
         stringsAsFactors = FALSE
     )
-
 
     # Check if file_name is in data_dict
 
@@ -283,6 +179,20 @@ load_gerda_web <- function(file_name,
         return(fail("Invalid file_format. Must be either 'csv' or 'rds'."))
     }
 
+    # Some datasets (e.g. the targeted 2023/2024 -> 2025 crosswalks) ship in RDS
+    # only. Fail informatively instead of letting the user hit a 404.
+    available_formats <- strsplit(
+        data_dictionary$formats[data_dictionary$data_name == file_name], ","
+    )[[1]]
+    if (!file_format %in% available_formats) {
+        return(fail(paste0(
+            "Dataset '", file_name, "' is not available in '", file_format,
+            "' format. Available format(s): ",
+            paste(available_formats, collapse = ", "),
+            ". Use file_format = \"", available_formats[1], "\"."
+        )))
+    }
+
     # Get the url
     url <- data_dictionary[[paste0(file_format, "_url")]][data_dictionary$data_name == file_name]
 
@@ -291,36 +201,82 @@ load_gerda_web <- function(file_name,
         message("Loading data...")
     }
 
-    # Download to a tempfile first, then read locally. Streaming `readr::read_rds`
-    # directly from a URL breaks on xz-compressed RDS files (e.g. the 1990->2025
-    # crosswalks), because the streaming reader doesn't auto-detect xz. Reading
-    # from disk lets base `readRDS` auto-detect any R-supported compression, and
-    # keeps CSV behavior symmetrical.
-    #
-    # Raise the download timeout for the duration of the fetch. R's default
-    # (60s) is too short for some of the larger GERDA files over GitHub-media
-    # on slower connections; users otherwise see sporadic timeouts on the first
-    # pull of files like mayor_panel_annual_harm or federal_muni_harm_21.
-    old_timeout <- getOption("timeout")
-    if (is.null(old_timeout) || old_timeout < 300) {
-        options(timeout = 300)
-        on.exit(options(timeout = old_timeout), add = TRUE)
+    # Read a local file (cached copy or freshly downloaded tempfile). Reading
+    # from disk lets base `readRDS` auto-detect any R-supported compression
+    # (e.g. the xz-compressed 1990->2025 crosswalks), which streaming
+    # `readr::read_rds` from a URL could not, and keeps CSV behavior symmetrical.
+    read_local <- function(path) {
+        switch(file_format,
+            "csv" = read_csv(path, show_col_types = FALSE),
+            "rds" = readRDS(path)
+        )
     }
-    tmp <- tempfile(fileext = paste0(".", file_format))
-    on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
-    data <- tryCatch(
-        {
-            utils::download.file(url, tmp, mode = "wb", quiet = !verbose)
-            switch(file_format,
-                "csv" = read_csv(tmp, show_col_types = FALSE),
-                "rds" = readRDS(tmp)
-            )
-        },
-        error = function(e) {
-            fail(paste0("Error loading data: ", e$message,
-                        "\nThe data may not be available or may have changed. Please contact the package maintainer."))
+
+    use_cache <- isTRUE(cache)
+    cache_file <- if (use_cache) {
+        file.path(gerda_cache_dir(), paste0(file_name, ".", file_format))
+    } else {
+        NULL
+    }
+
+    data <- NULL
+
+    # Fast path: read a valid cached copy without touching the network.
+    if (use_cache && !refresh && file.exists(cache_file) && !is_lfs_pointer(cache_file)) {
+        if (verbose) {
+            message("Reading from cache: ", cache_file)
         }
-    )
+        data <- tryCatch(read_local(cache_file), error = function(e) {
+            if (verbose) {
+                message("Cached file unreadable; re-downloading. (",
+                        conditionMessage(e), ")")
+            }
+            NULL
+        })
+    }
+
+    # Download path: fetch to a tempfile (with timeout + retries + LFS check),
+    # read it, and populate the cache on success.
+    if (is.null(data)) {
+        tmp <- tempfile(fileext = paste0(".", file_format))
+        on.exit(if (file.exists(tmp)) unlink(tmp), add = TRUE)
+
+        status <- fetch_to_file(url, tmp,
+            timeout = timeout, max_retries = max_retries, verbose = verbose
+        )
+        if (!status$success) {
+            return(fail(paste0(
+                "Error loading data: ", status$message,
+                "\nThe data may not be available or may have changed. ",
+                "Please contact the package maintainer."
+            )))
+        }
+
+        data <- tryCatch(read_local(tmp), error = function(e) {
+            fail(paste0(
+                "Error loading data: ", conditionMessage(e),
+                "\nThe data may not be available or may have changed. ",
+                "Please contact the package maintainer."
+            ))
+        })
+        if (is.null(data)) {
+            return(invisible(NULL))
+        }
+
+        if (use_cache) {
+            cdir <- dirname(cache_file)
+            if (!dir.exists(cdir)) {
+                dir.create(cdir, recursive = TRUE, showWarnings = FALSE)
+            }
+            copied <- tryCatch(
+                file.copy(tmp, cache_file, overwrite = TRUE),
+                error = function(e) FALSE
+            )
+            if (verbose && isTRUE(copied)) {
+                message("Cached to: ", cache_file)
+            }
+        }
+    }
 
     # Normalize schema for known upstream inconsistencies.
     # federal_cty_unharm ships with 'ags' (a 5-digit county code) and 'year',
@@ -328,7 +284,7 @@ load_gerda_web <- function(file_name,
     # To keep downstream helpers like add_gerda_covariates() working without
     # breaking existing user code, add 'county_code'/'election_year' as aliases
     # alongside the original columns. The 'ags' and 'year' aliases are
-    # deprecated and scheduled for removal in v0.7.
+    # deprecated and scheduled for removal in v0.8.
     if (!is.null(data) && file_name == "federal_cty_unharm") {
         added_alias <- FALSE
         if ("ags" %in% names(data) && !"county_code" %in% names(data)) {
@@ -343,7 +299,7 @@ load_gerda_web <- function(file_name,
             message(
                 "Note: 'federal_cty_unharm' now also provides 'county_code' and 'election_year' ",
                 "to match other county-level datasets. The upstream 'ags' and 'year' columns ",
-                "remain for backwards compatibility but are deprecated and will be removed in v0.7. ",
+                "remain for backwards compatibility but are deprecated and will be removed in v0.8. ",
                 "Please migrate your code to the new column names."
             )
         }

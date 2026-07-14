@@ -67,6 +67,28 @@ test_that("gerda_data_list data integrity", {
     expect_true(any(grepl("unharmonized", result$description)))
 })
 
+test_that("gerda_data_list exposes structured metadata columns", {
+    result <- gerda_data_list(print_table = FALSE)
+
+    # Back-compat: data_name and description remain the first two columns.
+    expect_equal(colnames(result)[1:2], c("data_name", "description"))
+
+    # New structured columns are present and well-typed.
+    expect_true(all(c(
+        "election_type", "geographic_level", "year_start", "year_end",
+        "boundary", "formats", "candidate_info"
+    ) %in% colnames(result)))
+    expect_type(result$year_start, "integer")
+    expect_type(result$year_end, "integer")
+    expect_type(result$candidate_info, "logical")
+
+    # Values fall in their allowed sets.
+    expect_true(all(result$geographic_level %in%
+        c("municipality", "county", "person")))
+    both <- !is.na(result$year_start) & !is.na(result$year_end)
+    expect_true(all(result$year_start[both] <= result$year_end[both]))
+})
+
 test_that("gerda_data_list default parameter behavior", {
     # Test that default behavior (no parameters) works like print_table = TRUE
     output1 <- capture.output(result1 <- gerda_data_list())
