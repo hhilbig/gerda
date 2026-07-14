@@ -43,7 +43,7 @@ test_that("federal_cty_unharm emits a deprecation message on load", {
     )
     skip_if(is.null(msgs), "federal_cty_unharm could not be downloaded (network)")
     expect_true(any(grepl("deprecated", msgs, ignore.case = TRUE)))
-    expect_true(any(grepl("v0\\.7", msgs)))
+    expect_true(any(grepl("v0\\.8", msgs)))
 })
 
 test_that("federal_cty_unharm can be piped into add_gerda_covariates", {

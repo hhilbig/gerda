@@ -10,9 +10,11 @@ gerda_data_list(print_table = TRUE)
 \item{print_table}{A logical value indicating whether to print the table in the console (TRUE) or return the data as a tibble (FALSE). Default is TRUE.}
 }
 \value{
-A tibble containing the available GERDA data with descriptions. When print_table = TRUE,
-the function prints a formatted table to the console and invisibly returns the data tibble.
-When print_table = FALSE, the function directly returns the data tibble.
+A tibble containing the available GERDA data with descriptions and
+structured metadata. When print_table = TRUE, the function prints a
+formatted table (name and description) to the console and invisibly
+returns the full tibble. When print_table = FALSE, the function
+directly returns the tibble.
 }
 \description{
 This function lists the available GERDA data sets. The purpose of this
@@ -26,8 +28,27 @@ covariate data accessible via dedicated functions:
 \item \code{\link{gerda_covariates}}: County-level INKAR covariates (1995-2022)
 \item \code{\link{gerda_census}}: Municipality-level Census 2022 data
 }
+
+The returned tibble carries structured metadata beyond the name and
+description. Use \code{print_table = FALSE} to access these columns:
+\describe{
+\item{election_type}{\code{municipal}, \code{state}, \code{federal}, \code{county-kreistag},
+\code{european}, \code{mayoral}, \code{crosswalk}, or \code{covariate}.}
+\item{geographic_level}{\code{municipality}, \code{county}, \code{wahlkreis}, or \code{person}.}
+\item{year_start, year_end}{Election year range, or \code{NA} where the
+dataset has no explicit stated span (e.g. crosswalks and covariates).}
+\item{boundary}{Harmonization target (\code{unharmonized}, \code{harmonized},
+\code{current}, \code{raw}, \code{2021}, \code{2023}, \code{2025}, or \code{NA}).}
+\item{formats}{Available download formats (\code{"csv,rds"} or \code{"rds"}).}
+\item{candidate_info}{\code{TRUE} if the dataset includes person-level
+candidate / office-holder identities.}
+}
 }
 \examples{
 gerda_data_list()
+
+# Access the structured metadata (geographic level, years, formats, ...)
+meta <- gerda_data_list(print_table = FALSE)
+meta[meta$election_type == "federal", ]
 
 }

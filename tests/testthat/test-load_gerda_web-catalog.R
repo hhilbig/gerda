@@ -25,6 +25,11 @@ catalog_datasets <- list(
         "federal_cty_unharm",
         "federal_cty_harm"
     ),
+    federal_wkr = c(
+        "federal_wkr_unharm",
+        "federal_wkr_unharm_long",
+        "federal_wkr_2021_on_2025"
+    ),
     county = c(
         "county_elec_unharm",
         "county_elec_harm_21",
@@ -47,6 +52,7 @@ catalog_datasets <- list(
     crosswalks = c(
         "ags_crosswalks",
         "cty_crosswalks",
+        "wkr_2021_to_2025_crosswalk",
         "ags_1990_to_2023_crosswalk",
         "ags_1990_to_2025_crosswalk",
         "crosswalk_ags_2021_to_2023",
@@ -107,6 +113,21 @@ test_that("RDS-only datasets can be requested with file_format='rds'", {
                 load_gerda_web(ds, file_format = "rds", verbose = FALSE)
             ))
         })
+    }
+})
+
+test_that("requesting csv for an RDS-only dataset fails informatively", {
+    # Fails on the format guard before any download, so this runs offline.
+    for (ds in rds_only) {
+        expect_warning(
+            res <- load_gerda_web(ds, file_format = "csv"),
+            "not available in 'csv' format"
+        )
+        expect_null(res)
+        expect_error(
+            load_gerda_web(ds, file_format = "csv", on_error = "stop"),
+            "not available in 'csv' format"
+        )
     }
 })
 

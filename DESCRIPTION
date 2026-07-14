@@ -1,6 +1,6 @@
 Package: gerda
 Title: German Election Database (GERDA)
-Version: 0.6.0
+Version: 0.7.0
 Author: Hanno Hilbig [aut, cre] (<https://orcid.org/0000-0001-5849-9172>)
 Authors@R: 
     person("Hanno", "Hilbig", , "hhilbig@ucdavis.edu", role = c("aut", "cre"),
@@ -26,7 +26,9 @@ Imports:
     readr,
     stats,
     stringdist,
-    tibble
+    tibble,
+    tools,
+    utils
 Suggests:
     knitr,
     rmarkdown,
