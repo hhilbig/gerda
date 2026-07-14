@@ -8,7 +8,11 @@ load_gerda_web(
   file_name,
   verbose = FALSE,
   file_format = "rds",
-  on_error = getOption("gerda.on_error", "warn")
+  on_error = getOption("gerda.on_error", "warn"),
+  timeout = getOption("gerda.timeout", 300),
+  max_retries = getOption("gerda.max_retries", 2),
+  cache = getOption("gerda.cache", FALSE),
+  refresh = FALSE
 )
 }
 \arguments{
@@ -19,6 +23,14 @@ load_gerda_web(
 \item{file_format}{A character string specifying the format of the file. Must be either "csv" or "rds". Default is "rds".}
 
 \item{on_error}{How to handle errors (unknown dataset name, failed download, corrupt file, invalid \code{file_format}). Either \code{"warn"} (default) to emit a warning and return \code{NULL}, or \code{"stop"} to raise an error. Use \code{"stop"} inside scripts or pipelines where silent \code{NULL} returns would produce confusing downstream failures. The global default can also be overridden with \code{options(gerda.on_error = "stop")}.}
+
+\item{timeout}{Download timeout in seconds. Defaults to \code{getOption("gerda.timeout", 300)}. The value is applied only for the duration of the download (raising R's default of 60s, which is too short for the larger GERDA files) and restored afterwards.}
+
+\item{max_retries}{Number of additional download attempts after the first, with exponential backoff, if a download fails or returns a Git LFS pointer instead of data. Defaults to \code{getOption("gerda.max_retries", 2)} (so up to three attempts in total).}
+
+\item{cache}{Logical; if \code{TRUE}, downloaded datasets are cached on disk (in \code{gerda_cache_dir()}) and reused on subsequent calls instead of being re-downloaded. Defaults to \code{getOption("gerda.cache", FALSE)}. Caching is opt-in so the package never writes to user filespace without consent. See \code{\link[=clear_gerda_cache]{clear_gerda_cache()}} to purge the cache.}
+
+\item{refresh}{Logical; if \code{TRUE}, ignore any cached copy and force a fresh download (updating the cache when \code{cache = TRUE}). Default is \code{FALSE}.}
 }
 \value{
 A tibble containing the loaded data, or NULL if the data could not be loaded.
@@ -46,6 +58,13 @@ data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_for
 
 # Load federal election data harmonized to 2025 boundaries (includes 2025 election)
 data_federal_2025 <- load_gerda_web("federal_muni_harm_25", verbose = TRUE, file_format = "rds")
+
+# Cache the download so repeated calls in the same project reuse it
+data_federal_2025 <- load_gerda_web("federal_muni_harm_25", cache = TRUE)
 }
 
+}
+\seealso{
+\code{\link[=gerda_data_list]{gerda_data_list()}} for the dataset catalog, \code{\link[=clear_gerda_cache]{clear_gerda_cache()}}
+and \code{\link[=gerda_cache_dir]{gerda_cache_dir()}} for cache management.
 }

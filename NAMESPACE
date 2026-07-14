@@ -2,6 +2,8 @@
 
 export(add_gerda_census)
 export(add_gerda_covariates)
+export(clear_gerda_cache)
+export(gerda_cache_dir)
 export(gerda_census)
 export(gerda_census_codebook)
 export(gerda_covariates)
