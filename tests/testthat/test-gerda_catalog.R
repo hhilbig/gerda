@@ -4,7 +4,7 @@
 test_that("gerda_catalog() has the expected shape", {
     cat <- gerda_catalog()
     expect_s3_class(cat, "data.frame")
-    expect_equal(nrow(cat), 43)
+    expect_equal(nrow(cat), 46)
     expect_setequal(
         colnames(cat),
         c("data_name", "description", "path", "election_type",
@@ -23,7 +23,7 @@ test_that("catalog metadata values are in their allowed sets", {
 
     expect_true(all(cat$election_type %in% c(
         "municipal", "state", "federal", "county-kreistag",
-        "european", "mayoral", "crosswalk", "covariate"
+        "european", "mayoral", "landrat", "crosswalk", "covariate"
     )))
     expect_true(all(cat$geographic_level %in%
         c("municipality", "county", "wahlkreis", "person")))
@@ -40,9 +40,10 @@ test_that("year ranges are internally consistent", {
     cat <- gerda_catalog()
     both <- !is.na(cat$year_start) & !is.na(cat$year_end)
     expect_true(all(cat$year_start[both] <= cat$year_end[both]))
-    # Years, where present, are plausible German-election years.
+    # Years, where present, are plausible German-election years (Landrat
+    # elections reach back to 1945).
     yrs <- c(cat$year_start[!is.na(cat$year_start)], cat$year_end[!is.na(cat$year_end)])
-    expect_true(all(yrs >= 1946 & yrs <= 2030))
+    expect_true(all(yrs >= 1945 & yrs <= 2030))
 })
 
 test_that("RDS-only datasets are flagged as rds-only", {
@@ -57,12 +58,12 @@ test_that("RDS-only datasets are flagged as rds-only", {
     expect_true(all(cat$formats[!cat$data_name %in% rds_only] == "csv,rds"))
 })
 
-test_that("candidate_info flags the person-level mayoral datasets", {
+test_that("candidate_info flags the person-level candidate datasets", {
     cat <- gerda_catalog()
     expect_setequal(
         cat$data_name[cat$candidate_info],
         c("mayoral_candidates", "mayor_panel", "mayor_panel_harm",
-          "mayor_panel_annual", "mayor_panel_annual_harm")
+          "mayor_panel_annual", "mayor_panel_annual_harm", "landrat_candidates")
     )
 })
 
