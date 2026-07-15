@@ -12,8 +12,8 @@
 #'   \item{path}{Repository subpath under \code{data/}, used to build the
 #'     CSV/RDS download URLs.}
 #'   \item{election_type}{One of \code{municipal}, \code{state}, \code{federal},
-#'     \code{county-kreistag}, \code{european}, \code{mayoral}, \code{crosswalk},
-#'     \code{covariate}.}
+#'     \code{county-kreistag}, \code{european}, \code{mayoral}, \code{landrat},
+#'     \code{crosswalk}, \code{covariate}.}
 #'   \item{geographic_level}{\code{municipality}, \code{county},
 #'     \code{wahlkreis} (Bundestag constituency), or \code{person}.}
 #'   \item{year_start, year_end}{Election year range (integer), or \code{NA}
@@ -87,6 +87,14 @@ gerda_catalog <- function() {
            "State elections at the municipal level, harmonized to 2025 boundaries.",
            "state_elections/final/state_harm_25",
            "state", "municipality", NA, NA, "2025"),
+        ds("ltw_wkr_unharm",
+           "State (Landtag) elections at the Wahlkreis (constituency) level (1990-2026, unharmonized).",
+           "state_elections/final/ltw_wkr_unharm",
+           "state", "wahlkreis", 1990, 2026, "unharmonized"),
+        ds("ltw_wkr_unharm_long",
+           "State (Landtag) elections at the Wahlkreis level (1990-2026), long format with vote counts.",
+           "state_elections/final/ltw_wkr_unharm_long",
+           "state", "wahlkreis", 1990, 2026, "unharmonized"),
 
         # Federal elections
         ds("federal_muni_raw",
@@ -131,10 +139,6 @@ gerda_catalog <- function() {
            "County (Kreistag) elections at the municipal level, unharmonized.",
            "county_elections/final/county_elec_unharm",
            "county-kreistag", "municipality", NA, NA, "unharmonized"),
-        ds("county_elec_harm_21",
-           "County (Kreistag) elections, harmonized to 2021 boundaries.",
-           "county_elections/final/county_elec_harm_21",
-           "county-kreistag", "municipality", NA, NA, "2021"),
         ds("county_elec_harm_21_cty",
            "County (Kreistag) elections aggregated to county level, harmonized to 2021 boundaries.",
            "county_elections/final/county_elec_harm_21_cty",
@@ -183,6 +187,16 @@ gerda_catalog <- function() {
            "Mayor panel at annual frequency, harmonized to current boundaries.",
            "mayoral_elections/final/mayor_panel_annual_harm",
            "mayoral", "municipality", NA, NA, "current", "csv,rds", TRUE),
+
+        # Landrat (county executive) elections
+        ds("landrat_unharm",
+           "Landrat (county executive) elections at the county level (1945-2026, unharmonized).",
+           "landrat_elections/final/landrat_unharm",
+           "landrat", "county", 1945, 2026, "unharmonized"),
+        ds("landrat_candidates",
+           "Landrat candidates (person-level, includes Stichwahl and candidate attributes).",
+           "landrat_elections/final/landrat_candidates",
+           "landrat", "person", 1945, 2026, NA_character_, "csv,rds", TRUE),
 
         # Crosswalks
         ds("ags_crosswalks",
