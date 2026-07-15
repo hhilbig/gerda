@@ -1,3 +1,19 @@
+# gerda 0.7.1
+
+## New Features
+
+* Exposed four datasets that were already in the upstream repository but not in the catalog (43 → 46 datasets):
+  * **State (Landtag) elections at the Wahlkreis (constituency) level**: `ltw_wkr_unharm` (vote shares) and `ltw_wkr_unharm_long` (vote counts), 1990–2026, all 16 states. The state-level counterpart to the federal `federal_wkr_*` datasets.
+  * **Landrat (county executive) elections** — a new election family: `landrat_unharm` (county-level results) and `landrat_candidates` (person-level candidates, with Stichwahl and candidate attributes), 1945–2026. `gerda_data_list()` gains a corresponding `election_type` value, `landrat`.
+
+## Bug Fixes
+
+* Removed the catalog entry `county_elec_harm_21`, which pointed to a file that does not exist upstream (only `county_elec_harm_21_cty` and `county_elec_harm_21_muni` are published), so calling it always failed. `load_gerda_web("county_elec_harm_21")` now returns an "unknown dataset" message with fuzzy suggestions instead of a download error.
+
+## Tests
+
+* Hardened the catalog coverage test: it now asserts each dataset actually downloads to a non-empty data frame, rather than only that the call is silent. A lenient check previously let a broken/orphaned entry (like `county_elec_harm_21`) pass unnoticed.
+
 # gerda 0.7.0
 
 ## New Features

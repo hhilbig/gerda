@@ -15,7 +15,7 @@
 #' description. Use `print_table = FALSE` to access these columns:
 #' \describe{
 #'   \item{election_type}{`municipal`, `state`, `federal`, `county-kreistag`,
-#'     `european`, `mayoral`, `crosswalk`, or `covariate`.}
+#'     `european`, `mayoral`, `landrat`, `crosswalk`, or `covariate`.}
 #'   \item{geographic_level}{`municipality`, `county`, `wahlkreis`, or `person`.}
 #'   \item{year_start, year_end}{Election year range, or `NA` where the
 #'     dataset has no explicit stated span (e.g. crosswalks and covariates).}

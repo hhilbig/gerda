@@ -15,6 +15,10 @@ catalog_datasets <- list(
         "state_harm_23",
         "state_harm_25"
     ),
+    state_wkr = c(
+        "ltw_wkr_unharm",
+        "ltw_wkr_unharm_long"
+    ),
     federal_muni = c(
         "federal_muni_raw",
         "federal_muni_unharm",
@@ -32,7 +36,6 @@ catalog_datasets <- list(
     ),
     county = c(
         "county_elec_unharm",
-        "county_elec_harm_21",
         "county_elec_harm_21_cty",
         "county_elec_harm_21_muni"
     ),
@@ -48,6 +51,10 @@ catalog_datasets <- list(
         "mayor_panel_harm",
         "mayor_panel_annual",
         "mayor_panel_annual_harm"
+    ),
+    landrat = c(
+        "landrat_unharm",
+        "landrat_candidates"
     ),
     crosswalks = c(
         "ags_crosswalks",
@@ -83,11 +90,16 @@ for (family in names(catalog_datasets)) {
             # Skip on CRAN to avoid flaky network checks and long runtimes.
             skip_on_cran()
             for (ds in dsets) {
-                expect_silent({
-                    suppressWarnings(suppressMessages(
-                        load_gerda_web(ds, verbose = FALSE)
-                    ))
-                })
+                # Assert the download actually returns data, not just that the
+                # call is silent: an entry whose file 404s upstream returns NULL
+                # (warning suppressed), so a lenient expect_silent() would miss
+                # broken/orphaned catalog entries. Retries absorb transient
+                # network flakiness; a genuine 404 still fails here.
+                res <- suppressWarnings(suppressMessages(
+                    load_gerda_web(ds, verbose = FALSE)
+                ))
+                expect_s3_class(res, "data.frame")
+                expect_gt(nrow(res), 0)
             }
         })
     })
