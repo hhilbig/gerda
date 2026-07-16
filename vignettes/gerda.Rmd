@@ -20,13 +20,17 @@ library(gerda)
 
 ## Overview
 
-The `gerda` package provides functions to access and work with GERDA datasets. The German Election Database (GERDA) provides data on German elections spanning federal elections (since 1953 at the county level, 1980 at the municipal level), state (*Landtag*) elections, local (*Kommunal*) elections, mayoral (*Bürgermeister*) elections, European Parliament elections, and county (*Kreistag*) elections. All election datasets include turnout and vote shares for all major parties. GERDA also supplies geographically harmonized datasets that account for changes in municipal boundaries and mail-in voting districts.
+The `gerda` package provides functions to access and work with GERDA datasets. The German Election Database (GERDA) provides data on federal elections, state (*Landtag*) elections, local (*Kommunal*) elections, mayoral (*Bürgermeister*) elections, Landrat elections, European Parliament elections, and county (*Kreistag*) elections. Federal data include municipality-, county-, and constituency-level files; state data include municipality- and constituency-level files. GERDA also supplies geographically harmonized datasets that account for changes in municipal boundaries and mail-in voting districts.
 
 In addition to election results, the package provides county-level socioeconomic covariates from INKAR, municipality-level data from the German Census 2022, and a party crosswalk that maps GERDA party names to standardized ParlGov attributes.
 
 GERDA was compiled by Vincent Heddesheimer, Florian Sichart, Andreas Wiedemann and Hanno Hilbig. For additional information, see also the GERDA website (www.german-elections.com) and the accompanying publication: [doi.org/10.1038/s41597-025-04811-5](https://doi.org/10.1038/s41597-025-04811-5)
 
 This vignette will introduce you to the main functions of the package and demonstrate how to use them. 
+
+For a stricter workflow intended for unattended coding agents, including
+snapshot provenance, key audits, guarded joins, and machine-readable join
+diagnostics, see `vignette("agent-workflow")`.
 
 ## Available Datasets
 
@@ -36,7 +40,7 @@ To see a list of all available GERDA electoral result datasets, you can use the 
 gerda_data_list()
 ```
 
-This function displays a formatted table with the names and descriptions of all available datasets. You can use the `file_name` column from this output to specify which dataset you want to load using the `load_gerda_web()` function.
+This function displays a formatted table with the names and descriptions of all available datasets. Use `gerda_data_list(print_table = FALSE)` to obtain the structured catalog, then pass a value from its `data_name` column to `load_gerda_web()`.
 
 ## Loading Data
 
@@ -44,7 +48,13 @@ The main function for loading GERDA data is `load_gerda_web()`. This function al
 
 ```{r, eval=FALSE}
 # Load the municipal harmonized dataset
-municipal_harm_data <- load_gerda_web("municipal_harm", verbose = TRUE, file_format = "rds")
+municipal_harm_data <- load_gerda_web(
+  "municipal_harm",
+  verbose = TRUE,
+  file_format = "rds",
+  on_error = "stop",
+  cache = TRUE
+)
 ```
 
 The `load_gerda_web()` function takes the following parameters:
@@ -52,6 +62,29 @@ The `load_gerda_web()` function takes the following parameters:
 - `file_name`: A character string with the name of the dataset to load, e.g. `"federal_cty_harm"` (as shown in the `gerda_data_list()` output). The function supports fuzzy matching, so close misspellings will produce a helpful suggestion.
 - `verbose`: If set to `TRUE`, it prints messages about the loading process (default is `FALSE`)
 - `file_format`: Specifies the format of the file to load, either `"rds"` or `"csv"` (default is `"rds"`). Both formats return the same tibble, so this choice only affects download size and speed.
+- `on_error`: Use `"stop"` in scripts and pipelines so a failed load raises an immediate error instead of returning `NULL` (the backwards-compatible default is `"warn"`).
+- `timeout` and `max_retries`: Control the download timeout and number of retry attempts.
+- `cache`: If `TRUE`, retain a local copy for subsequent calls. The default is `FALSE`.
+- `refresh`: If `TRUE`, ignore a cached copy and download the dataset again.
+
+## Choosing the Right Dataset
+
+The dataset variant is a substantive choice:
+
+- `*_raw` files retain a source-near representation and are mainly useful for auditing or custom cleaning.
+- `*_unharm` files use the geography in force at each election. They are suitable for cross-sectional analyses, but geographic identifiers can refer to changing territories over time.
+- `*_harm` files map observations to a common geography for comparisons over time. A suffix such as `_21`, `_23`, or `_25` states the target boundary vintage. Select the vintage that matches the analysis rather than automatically choosing the newest one.
+- Wahlkreis files ending in `_long` contain party vote counts; their wide counterparts contain party vote shares. State and federal Wahlkreis boundaries can change between elections, and the unharmonized files do not by themselves create fixed-boundary panels.
+
+The structured catalog supports programmatic filtering:
+
+```{r}
+catalog <- gerda_data_list(print_table = FALSE)
+subset(catalog,
+       election_type == "federal" &
+       geographic_level == "municipality" &
+       boundary == "2025")
+```
 
 ## Example Workflow
 
@@ -66,30 +99,46 @@ gerda_data_list()
 2. Load a dataset (in this case, the federal elections at the county level, harmonized):
 
 ```{r, eval=FALSE}
-federal_cty_harm <- load_gerda_web("federal_cty_harm", verbose = TRUE)
+federal_cty_harm <- load_gerda_web(
+  "federal_cty_harm",
+  verbose = TRUE,
+  on_error = "stop",
+  cache = TRUE
+)
 ```
 
 ## Joining GERDA Datasets
 
 If you are using `add_gerda_covariates()` or `add_gerda_census()`, you can skip this section: the helpers detect the level of your data and use the correct join keys automatically. If you are writing a manual `left_join()` or merging against other sources, the table below shows which identifier and time columns each family carries.
 
-| Dataset family                                                                                        | Geographic id                                      | Time column                  |
-|------------------------------------------------------------------------------------------------------|----------------------------------------------------|------------------------------|
-| `municipal_*`, `state_*`, `federal_muni_*`, `european_muni_*`, `mayoral_*`                            | `ags` (8-digit municipality)                       | `election_year` (+ `election_date` where available) |
-| `federal_cty_harm`                                                                                   | `county_code` (5-digit county)                     | `election_year`              |
-| `federal_cty_unharm`                                                                                 | `county_code` + `ags` alias (see Deprecations)     | `election_year` + `year` alias |
-| `county_elec_*` (with `_cty` suffix)                                                                  | `county_code` (5-digit county)                     | `election_year`              |
-| `county_elec_*` (without `_cty` suffix)                                                               | `ags` (8-digit municipality)                       | `election_year`              |
-| `mayor_panel` / `mayor_panel_harm`                                                                    | `ags` + `person_id`                                | `election_date`              |
-| `mayor_panel_annual` / `mayor_panel_annual_harm`                                                     | `ags` + `person_id`                                | `year`                       |
-| `gerda_covariates()` (INKAR, county-level)                                                            | `county_code` (5-digit county)                     | `year` (not `election_year`) |
-| `gerda_census()` (Zensus 2022, municipality-level)                                                    | `ags` (8-digit municipality)                       | *time-invariant (2022)*      |
-| `ags_crosswalks`, `ags_1990_to_2023_crosswalk`, `ags_1990_to_2025_crosswalk`, `crosswalk_ags_*`       | Pair of AGS codes at source and target vintages    | Vintage is encoded in column names |
-| `cty_crosswalks`                                                                                      | Pair of 5-digit county codes at source and target  | Vintage is in column names   |
+| Dataset family | Geographic identifier and additional row keys | Time column |
+|---|---|---|
+| `municipal_*`, `state_*`, `federal_muni_*`, `european_muni_*` | `ags` (8-digit municipality) | `election_year` (+ `election_date` where available) |
+| `mayoral_unharm`, `mayoral_harm` | `ags`; `round` distinguishes first and runoff rounds | `election_year`, `election_date` |
+| `mayoral_candidates` | `ags` + candidate; first- and second-round results are stored in separate columns | `election_year`, `election_date`, `election_date_sw` |
+| `mayor_panel`, `mayor_panel_harm` | `ags` + `person_id` | `election_date` |
+| `mayor_panel_annual`, `mayor_panel_annual_harm` | `ags` + `person_id` | `year` |
+| `landrat_unharm` | `ags` (8-digit county AGS ending in `000`); `round` distinguishes election rounds | `election_year`, `election_date` |
+| `landrat_candidates` | `ags` (8-digit county AGS ending in `000`) + candidate | `election_year`, `election_date`, `election_date_sw` |
+| `federal_cty_harm` | `county_code` (5-digit county) | `election_year` |
+| `federal_cty_unharm` | `county_code` + deprecated `ags` alias | `election_year` + deprecated `year` alias |
+| `county_elec_*_cty` | `county_code` (5-digit county) | `election_year` |
+| `county_elec_unharm`, `county_elec_*_muni` | `ags` (8-digit municipality) | `election_year` |
+| `ltw_wkr_unharm` | `state` + `wkr_nr` + `stimme` | `election_year`, `election_date` |
+| `ltw_wkr_unharm_long` | `state` + `wkr_nr` + `stimme` + `party` | `election_year`, `election_date` |
+| `federal_wkr_unharm` | `wkr_nr` + `stimme` | `election_year`, `election_date` |
+| `federal_wkr_unharm_long` | `wkr_nr` + `stimme` + `party` | `election_year`, `election_date` |
+| `federal_wkr_2021_on_2025` | `wkr_nr` (2025 boundaries) + `stimme` | Fixed 2021 result; no time column |
+| `wkr_2021_to_2025_crosswalk` | `wkr_nr` (2025) + `prior_2021_wkr_nr` | Boundary vintages are encoded in column names |
+| `gerda_covariates()` (INKAR, county-level) | `county_code` (5-digit county) | `year` (not `election_year`) |
+| `gerda_census()` (Zensus 2022, municipality-level) | `ags` (8-digit municipality) | *Time-invariant (2022)* |
+| `ags_crosswalks`, `ags_1990_to_2023_crosswalk`, `ags_1990_to_2025_crosswalk`, `crosswalk_ags_*` | Pair of AGS codes at source and target vintages | Vintage is encoded in column names |
+| `cty_crosswalks` | Pair of 5-digit county codes at source and target vintages | Vintage is encoded in column names |
 
-Two things to watch for when joining manually:
+Three things to watch for when joining manually:
 
 - `gerda_covariates()` uses `year`, not `election_year`. If you merge it directly into federal election data, you need a rename: `by = c("county_code" = "county_code", "election_year" = "year")`.
+- Keep AGS and Wahlkreis identifiers as character strings so leading zeros are preserved.
 - On municipal-level files, the `county` column is a county name or partial code, not the 5-digit AGS-based county code. Use `substr(ags, 1, 5)` to extract the county key when you want to join against county-level data.
 
 ## County-Level Covariates
@@ -104,10 +153,14 @@ The easiest way to add covariates to your election data is using the `add_gerda_
 library(dplyr)
 
 # Load election data and add covariates
-merged <- load_gerda_web("federal_cty_harm") %>%
-  add_gerda_covariates()
+merged <- load_gerda_web(
+  "federal_cty_harm",
+  on_error = "stop",
+  cache = TRUE
+) %>%
+  add_gerda_covariates(unmatched = "error")
 
-# Your data now includes 30 county-level covariates!
+join_report <- gerda_join_diagnostics(merged)
 ```
 
 Under the hood, `add_gerda_covariates()` merges on county code and election year. It automatically:
@@ -115,6 +168,13 @@ Under the hood, `add_gerda_covariates()` merges on county code and election year
 - Detects whether the input is county-level or municipal-level data (and extracts county codes from municipal AGS codes if needed)
 - Performs a left join, so all election rows are kept and covariates are added where available
 - Validates that the required columns (`county_code` or `ags`, and `election_year`) are present
+- Rejects malformed or numeric identifiers, duplicate reference keys, output-column conflicts, and row expansion
+- Reports unexpected unmatched keys separately from election years outside the 1995-2022 INKAR coverage window
+
+The default `unmatched = "warn"` retains unexpected unmatched rows with missing
+joined values and reports exact row and unit counts. Use `"error"` in automated
+pipelines or `"ignore"` only when unmatched keys have already been audited.
+Retrieve the machine-readable report with `gerda_join_diagnostics()`.
 
 ### Available Covariates
 
@@ -184,24 +244,36 @@ The main advantage of this covariate data is that it is observed at the municipa
 library(gerda)
 
 # Add census data to municipal-level elections
-muni_merged <- load_gerda_web("federal_muni_harm_21") |>
-  add_gerda_census()
+muni_merged <- load_gerda_web(
+  "federal_muni_harm_21",
+  on_error = "stop",
+  cache = TRUE
+) |>
+  add_gerda_census(unmatched = "error")
 
 # Also works with county-level data (aggregated from municipalities)
-county_merged <- load_gerda_web("federal_cty_harm") |>
-  add_gerda_census()
+county_merged <- load_gerda_web(
+  "federal_cty_harm",
+  on_error = "stop",
+  cache = TRUE
+) |>
+  add_gerda_census(unmatched = "error")
+
+gerda_join_diagnostics(muni_merged)
 ```
 
 ### Available Indicators
 
 The census data includes 14 indicators across four categories:
 
-- **Demographics**: Population, age structure (under 18, 18-29, 30-49, 50-64, 65+)
+- **Demographics**: Population, age structure (under 18, 18-29, 30-49, 50-59, 60+)
 - **Migration**: Migration background share, foreign nationals share
 - **Households**: Average household size
 - **Housing**: Total dwellings, vacancy rate, ownership rate, average rent per m², single-family home share
 
 Since the census is a 2022 snapshot, the same values are attached to all election years (see also the note above). 
+
+The Destatis source publishes a combined 60-74 age bin. GERDA therefore exposes `share_50to59_census22` and `share_60plus_census22`; the source cannot support separate 50-64 and 65+ measures.
 
 ### Viewing the Codebook
 

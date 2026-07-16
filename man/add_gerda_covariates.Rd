@@ -4,16 +4,22 @@
 \alias{add_gerda_covariates}
 \title{Add County-Level Covariates to GERDA Election Data}
 \usage{
-add_gerda_covariates(election_data)
+add_gerda_covariates(election_data, unmatched = "warn")
 }
 \arguments{
 \item{election_data}{A data frame containing GERDA election data. Must
 contain a column with county or municipal codes (see Details) and
 \code{election_year}.}
+
+\item{unmatched}{How to handle rows within the 1995-2022 INKAR coverage
+window whose join keys do not match. One of \code{"warn"} (default), \code{"error"},
+or \code{"ignore"}. Rows outside 1995-2022 are reported separately and do not
+trigger this action.}
 }
 \value{
 The input data frame with additional columns for all 30 county-level
-covariates. The number of rows remains unchanged (left join).
+covariates. The number of rows remains unchanged. A machine-readable join
+report is attached and can be retrieved with \code{\link[=gerda_join_diagnostics]{gerda_join_diagnostics()}}.
 }
 \description{
 Convenience function to merge INKAR county-level (Kreis) covariates with
@@ -73,6 +79,18 @@ Covariates are available from 1995-2022. For GERDA federal elections:
 Some covariates have missing values. Use \code{gerda_covariates_codebook()}
 to check data availability for specific variables.
 }
+
+\subsection{Validation and Diagnostics}{
+
+Geographic identifiers must be character vectors containing exactly five
+digits (\code{county_code}) or eight digits (\code{ags}). Numeric identifiers are
+rejected because leading zeros may already have been lost. Before joining,
+the function verifies reference-key uniqueness and rejects output-column
+conflicts. It then verifies that the join has not changed the input row
+count and reports unexpected unmatched rows separately from years outside
+INKAR coverage. Missing join keys are always classified as unexpected. Use
+\code{unmatched = "error"} in unattended pipelines.
+}
 }
 \examples{
 \dontrun{
@@ -115,5 +133,6 @@ county_data \%>\%
 \item \code{\link{gerda_covariates}} for direct access to the covariate data
 \item \code{\link{gerda_covariates_codebook}} for variable descriptions
 \item \code{\link{load_gerda_web}} for loading GERDA election data
+\item \code{\link{gerda_join_diagnostics}} for inspecting match results
 }
 }

@@ -120,9 +120,14 @@ gerda_covariates_codebook <- function() {
 #' @param election_data A data frame containing GERDA election data. Must
 #'   contain a column with county or municipal codes (see Details) and
 #'   \code{election_year}.
+#' @param unmatched How to handle rows within the 1995-2022 INKAR coverage
+#'   window whose join keys do not match. One of `"warn"` (default), `"error"`,
+#'   or `"ignore"`. Rows outside 1995-2022 are reported separately and do not
+#'   trigger this action.
 #'
 #' @return The input data frame with additional columns for all 30 county-level
-#'   covariates. The number of rows remains unchanged (left join).
+#'   covariates. The number of rows remains unchanged. A machine-readable join
+#'   report is attached and can be retrieved with [gerda_join_diagnostics()].
 #'
 #' @details
 #' ## Required Columns
@@ -154,6 +159,16 @@ gerda_covariates_codebook <- function() {
 #' ## Missing Data
 #' Some covariates have missing values. Use \code{gerda_covariates_codebook()}
 #' to check data availability for specific variables.
+#'
+#' ## Validation and Diagnostics
+#' Geographic identifiers must be character vectors containing exactly five
+#' digits (`county_code`) or eight digits (`ags`). Numeric identifiers are
+#' rejected because leading zeros may already have been lost. Before joining,
+#' the function verifies reference-key uniqueness and rejects output-column
+#' conflicts. It then verifies that the join has not changed the input row
+#' count and reports unexpected unmatched rows separately from years outside
+#' INKAR coverage. Missing join keys are always classified as unexpected. Use
+#' `unmatched = "error"` in unattended pipelines.
 #'
 #' @examples
 #' \dontrun{
@@ -195,12 +210,15 @@ gerda_covariates_codebook <- function() {
 #'   \item \code{\link{gerda_covariates}} for direct access to the covariate data
 #'   \item \code{\link{gerda_covariates_codebook}} for variable descriptions
 #'   \item \code{\link{load_gerda_web}} for loading GERDA election data
+#'   \item \code{\link{gerda_join_diagnostics}} for inspecting match results
 #' }
 #'
 #' @export
-add_gerda_covariates <- function(election_data) {
+add_gerda_covariates <- function(election_data, unmatched = "warn") {
   # Avoid NOTE in R CMD check for NSE variables
-  ags <- county_code_temp <- NULL
+  ags <- NULL
+
+  unmatched <- validate_gerda_unmatched(unmatched)
 
   # Validate input
   if (!is.data.frame(election_data)) {
@@ -210,6 +228,7 @@ add_gerda_covariates <- function(election_data) {
   if (!"election_year" %in% names(election_data)) {
     stop("election_data must contain an 'election_year' column")
   }
+  validate_gerda_year(election_data$election_year)
 
   # Detect data level (county or municipal)
   has_county_code <- "county_code" %in% names(election_data)
@@ -223,17 +242,44 @@ add_gerda_covariates <- function(election_data) {
     message("Both 'county_code' and 'ags' found. Using 'county_code' for merge.")
   }
 
+  identifier_name <- if (has_county_code) "county_code" else "ags"
+  identifier_width <- if (has_county_code) 5L else 8L
+  validate_gerda_identifier(
+    election_data[[identifier_name]], identifier_name, identifier_width
+  )
+
   # Get covariates
   covs <- gerda_covariates()
+  validate_gerda_identifier(covs$county_code, "county_code", 5L)
+  validate_gerda_year(covs$year, "year")
+  validate_gerda_join_key(
+    covs, c("county_code", "year"), "GERDA covariates"
+  )
+  assert_no_gerda_join_conflicts(
+    election_data, covs, c("county_code", "year"),
+    "add_gerda_covariates"
+  )
+
+  coverage_start <- min(covs$year)
+  coverage_end <- max(covs$year)
+  input_rows <- nrow(election_data)
 
   # Handle based on data level
   if (has_county_code) {
     # County-level data: direct merge
-    result <- election_data %>%
+    join_input <- election_data
+    input_keys <- c("county_code", "election_year")
+    reference_keys <- c("county_code", "year")
+    matched <- gerda_match_keys(
+      join_input, covs, input_keys, reference_keys
+    )
+    result <- join_input %>%
       dplyr::left_join(
         covs,
         by = c("county_code" = "county_code", "election_year" = "year")
       )
+    report_keys <- c("county_code = county_code", "election_year = year")
+    data_level <- "county"
   } else {
     # Municipal-level data: extract county code and merge
     message(
@@ -241,14 +287,50 @@ add_gerda_covariates <- function(election_data) {
       "Note: All municipalities within the same county will have identical covariate values."
     )
 
-    result <- election_data %>%
-      dplyr::mutate(county_code_temp = substr(ags, 1, 5)) %>%
+    temporary_key <- gerda_temp_name(names(election_data))
+    join_input <- election_data
+    join_input[[temporary_key]] <- substr(join_input$ags, 1, 5)
+    input_keys <- c(temporary_key, "election_year")
+    reference_keys <- c("county_code", "year")
+    matched <- gerda_match_keys(
+      join_input, covs, input_keys, reference_keys
+    )
+    by <- stats::setNames(reference_keys, input_keys)
+    result <- join_input %>%
       dplyr::left_join(
         covs,
-        by = c("county_code_temp" = "county_code", "election_year" = "year")
+        by = by
       ) %>%
-      dplyr::select(-county_code_temp)
+      dplyr::select(-dplyr::all_of(temporary_key))
+    report_keys <- c("substr(ags, 1, 5) = county_code", "election_year = year")
+    data_level <- "municipality"
   }
+
+  assert_gerda_row_count(input_rows, nrow(result), "add_gerda_covariates")
+
+  missing_keys <- !stats::complete.cases(join_input[input_keys])
+  outside_coverage <- !missing_keys &
+    (election_data$election_year < coverage_start |
+       election_data$election_year > coverage_end)
+  outside_coverage[is.na(outside_coverage)] <- FALSE
+
+  report <- make_gerda_join_report(
+    helper = "add_gerda_covariates",
+    data_level = data_level,
+    identifier_name = identifier_name,
+    identifier = election_data[[identifier_name]],
+    join_keys = report_keys,
+    matched = matched,
+    outside_coverage = outside_coverage,
+    missing_keys = missing_keys,
+    output_rows = nrow(result),
+    unmatched_action = unmatched,
+    coverage_start = coverage_start,
+    coverage_end = coverage_end,
+    outside_years = election_data$election_year[outside_coverage]
+  )
+  result <- attach_gerda_join_report(result, election_data, report)
+  signal_gerda_join_report(report)
 
   return(result)
 }

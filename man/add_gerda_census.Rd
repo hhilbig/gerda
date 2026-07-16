@@ -4,16 +4,20 @@
 \alias{add_gerda_census}
 \title{Add Census 2022 Data to GERDA Election Data}
 \usage{
-add_gerda_census(election_data)
+add_gerda_census(election_data, unmatched = "warn")
 }
 \arguments{
 \item{election_data}{A data frame containing GERDA election data. Must contain
 either an \code{ags} column (municipality level) or a \code{county_code}
 column (county level).}
+
+\item{unmatched}{How to handle input rows whose geographic identifier does
+not match Census 2022. One of \code{"warn"} (default), \code{"error"}, or \code{"ignore"}.}
 }
 \value{
 The input data frame with additional census columns appended. The
-number of rows remains unchanged (left join).
+number of rows remains unchanged. A machine-readable join report is
+attached and can be retrieved with \code{\link[=gerda_join_diagnostics]{gerda_join_diagnostics()}}.
 }
 \description{
 Convenience function to merge Zensus 2022 municipality-level data with
@@ -49,6 +53,18 @@ For county-level data, municipality-level census data is first aggregated:
 \item Other variables (avg_household_size_census22, avg_rent_per_m2_census22): Population-weighted means
 }
 }
+
+\subsection{Validation and Diagnostics}{
+
+Geographic identifiers must be character vectors containing exactly eight
+digits (\code{ags}) or five digits (\code{county_code}). Numeric identifiers are
+rejected because leading zeros may already have been lost. Before joining,
+the function verifies reference-key uniqueness and rejects output-column
+conflicts. It then verifies that the input row count is unchanged and
+reports the exact number of unmatched rows and geographic units. Missing
+join keys are classified as unexpected. Use \code{unmatched = "error"} in
+unattended pipelines.
+}
 }
 \examples{
 \dontrun{
@@ -68,5 +84,6 @@ county_data <- load_gerda_web("federal_cty_harm") |>
 \itemize{
 \item \code{\link{gerda_census}} for direct access to the census data
 \item \code{\link{gerda_census_codebook}} for variable descriptions
+\item \code{\link{gerda_join_diagnostics}} for inspecting match results
 }
 }

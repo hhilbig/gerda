@@ -121,7 +121,7 @@ test_that("add_gerda_covariates returns NAs for unmatched years", {
     stringsAsFactors = FALSE
   )
 
-  result <- add_gerda_covariates(county_data)
+  result <- suppressMessages(add_gerda_covariates(county_data))
 
   expect_equal(nrow(result), 1)
   expect_true(is.na(result$unemployment_rate))

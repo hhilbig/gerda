@@ -6,6 +6,10 @@ test_that("gerda_census returns a data frame with expected structure", {
   expect_true("ags" %in% names(census))
   expect_true("population_census22" %in% names(census))
   expect_true("share_migration_bg_census22" %in% names(census))
+  expect_true("share_50to59_census22" %in% names(census))
+  expect_true("share_60plus_census22" %in% names(census))
+  expect_false("share_50to64_census22" %in% names(census))
+  expect_false("share_65plus_census22" %in% names(census))
   expect_true("avg_household_size_census22" %in% names(census))
   expect_true("vacancy_rate_census22" %in% names(census))
 })
@@ -21,7 +25,16 @@ test_that("gerda_census_codebook returns a data frame with expected structure", 
   census <- gerda_census()
   census_vars <- names(census)
   documented_vars <- codebook$variable
-  expect_true(all(census_vars %in% documented_vars))
+  expect_setequal(census_vars, documented_vars)
+
+  age_rows <- codebook[match(
+    c("share_50to59_census22", "share_60plus_census22"),
+    codebook$variable
+  ), ]
+  expect_equal(
+    age_rows$label,
+    c("Share of population aged 50-59", "Share of population aged 60+")
+  )
 })
 
 test_that("add_gerda_census validates input", {
@@ -52,6 +65,8 @@ test_that("add_gerda_census works with municipality-level data", {
   # Should add census columns
   expect_true("population_census22" %in% names(result))
   expect_true("share_migration_bg_census22" %in% names(result))
+  expect_true("share_50to59_census22" %in% names(result))
+  expect_true("share_60plus_census22" %in% names(result))
   expect_true("vacancy_rate_census22" %in% names(result))
 
   # Original columns should be preserved
@@ -79,6 +94,7 @@ test_that("add_gerda_census works with county-level data", {
   # Should add aggregated census columns (suffixed with _census22)
   census_cols <- grep("_census22$", names(result), value = TRUE)
   expect_gt(length(census_cols), 0)
+  expect_true(all(c("share_50to59_census22", "share_60plus_census22") %in% census_cols))
 
   # Original columns should be preserved
   expect_true("votes" %in% names(result))

@@ -1,52 +1,20 @@
 # GERDA Package Test Suite
 
-This directory contains comprehensive tests for the GERDA package, written using the `testthat` framework.
+The package uses testthat edition 3. The suite is split by public function and download concern:
 
-## Test Structure
-
-The test suite is organized into the following files:
-
-### `test-gerda_data_list.R`
-
-Tests for the `gerda_data_list()` function:
-
-- Validates output structure with both `print_table = TRUE/FALSE`
-- Tests data integrity and completeness
-- Verifies default parameter behavior
-- Ensures all expected datasets are present
-
-### `test-load_gerda_web.R`
-
-Tests for the `load_gerda_web()` function:
-
-- Parameter validation (file names, formats)
-- Error handling for invalid inputs
-- Fuzzy matching functionality for similar dataset names
-- Format validation (CSV vs RDS)
-- Edge cases and boundary conditions
-
-**Note**: These tests focus on parameter validation and error handling rather than actual data downloading, to avoid network dependencies during testing.
-
-### `test-party_crosswalk.R`
-
-Tests for the `party_crosswalk()` function:
-
-- Basic functionality with known German parties
-- Handling of different destination columns (character vs numeric)
-- NA value processing
-- Parameter validation and error handling
-- Edge cases (empty vectors, unknown parties)
-- Data type consistency
-
-### `test-integration.R`
-
-Integration tests demonstrating typical package workflows:
-
-- Complete workflow from listing datasets to loading data
-- Party crosswalk integration with common German parties
-- Error handling across multiple functions
-- Data consistency between functions
-- Integration with tidyverse/dplyr workflows
+- `test-gerda_catalog.R`: internal catalog integrity and structured metadata.
+- `test-gerda_data_list.R`: printed and machine-readable catalog behavior.
+- `test-load_gerda_web-validation.R`: argument and error-mode validation.
+- `test-load_gerda_web-fuzzy.R`: suggestions and deprecated dataset guidance.
+- `test-load_gerda_web-extensions.R`: optional file extensions and formats.
+- `test-load_gerda_web-download.R`: retry, Git LFS, and cache helpers.
+- `test-load_gerda_web-catalog.R`: catalog-to-upstream download coverage.
+- `test-load_gerda_web-schema.R`: known upstream schema normalization.
+- `test-gerda_covariates.R`: bundled INKAR data and joins.
+- `test-gerda_census.R`: bundled Census 2022 data and joins.
+- `test-gerda_join.R`: identifier validation, many-to-one guarantees, unmatched modes, coverage classification, and diagnostics.
+- `test-party_crosswalk.R`: ParlGov mappings and validation.
+- `test-integration.R`: representative cross-function workflows.
 
 ## Running the Tests
 
@@ -59,45 +27,27 @@ library(devtools)
 # Run all tests
 test()
 
-# Or run specific test files
-test_file("tests/testthat/test-gerda_data_list.R")
+# Or run a specific test file
+test_file("tests/testthat/test-load_gerda_web-validation.R")
 ```
 
-## Test Coverage
-
-The test suite includes **164 individual test cases** covering:
-
-- ✅ All three main package functions
-- ✅ Parameter validation and error handling
-- ✅ Edge cases and boundary conditions
-- ✅ Data integrity and consistency
-- ✅ Integration workflows
-- ✅ Compatibility with tidyverse tools
-
-## Expected Test Results
-
-When all tests pass, you should see output similar to:
-
-```
-[ FAIL 0 | WARN 0 | SKIP 0 | PASS 164 ]
-```
+Tests that download data from GitHub use `skip_on_cran()`. They are skipped during CRAN checks and other runs where `NOT_CRAN` is not `"true"`. Offline tests still cover validation, catalog integrity, bundled data, cache logic, fuzzy matching, and merge behavior.
 
 ## Test Philosophy
 
 These tests are designed to:
 
-1. **Validate functionality** - Ensure all functions work as documented
-2. **Prevent regressions** - Catch breaking changes during development  
-3. **Document expected behavior** - Serve as executable specifications
-4. **Handle edge cases** - Test boundary conditions and error scenarios
-5. **Support CI/CD** - Enable automated testing in development workflows
+1. Validate public behavior and error contracts.
+2. Prevent catalog, schema, and bundled-data regressions.
+3. Document expected behavior through executable examples.
+4. Separate deterministic offline checks from network-dependent integration checks.
 
 ## Dependencies
 
 The tests require the following packages:
 
 - `testthat` (>= 3.0.0) - Testing framework
-- `dplyr` - For integration tests with tidyverse workflows
+- `dplyr` - Package dependency and integration workflows
 
 Optional dependencies:
 

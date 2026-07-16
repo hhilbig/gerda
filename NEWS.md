@@ -1,3 +1,23 @@
+# gerda (development version)
+
+## Breaking Changes
+
+* Corrected two misleading Census 2022 variable names to match the source bins: `share_50to64_census22` is now `share_50to59_census22`, and `share_65plus_census22` is now `share_60plus_census22`. Destatis publishes a combined age 60-74 bin, so true 50-64 and 65+ measures cannot be recovered from these tables.
+* `add_gerda_covariates()` and `add_gerda_census()` now reject numeric or malformed geographic identifiers. County codes must be five-digit character strings and municipality AGS codes must be eight-digit character strings; this prevents joins after leading zeros have been lost. The helpers also reject destination-column conflicts instead of creating ambiguous suffixes.
+
+## Safer Joins
+
+* Added `unmatched = "warn"`, `"error"`, or `"ignore"` to both enrichment helpers. Exact unmatched row and unit counts are reported; INKAR election years outside 1995-2022 are classified separately and retained with missing joined values.
+* Both helpers now verify that bundled reference keys are complete and unique before joining and that the output row count equals the input row count.
+* Added `gerda_join_diagnostics()` to retrieve machine-readable reports for one or multiple enrichment joins.
+
+## Documentation
+
+* Updated the README and vignette for the 46-dataset catalog, including the state Wahlkreis and Landrat families.
+* Added guidance for choosing raw, unharmonized, and harmonized datasets and documented the current join identifiers and time columns.
+* Added an agent-oriented vignette covering deterministic catalog selection, fail-closed downloads, project snapshots and checksums, schema validation, guarded joins, and handoff requirements.
+* Updated development and test-suite documentation to match the current package structure.
+
 # gerda 0.7.1
 
 ## New Features

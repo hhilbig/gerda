@@ -22,7 +22,8 @@ which automatically merges census data with GERDA election data.
 \details{
 The dataset includes:
 \itemize{
-\item Demographics: Population, age structure
+\item Demographics: Population and population shares for ages under 18,
+18-29, 30-49, 50-59, and 60+
 \item Migration: Migration background, foreign nationals
 \item Households: Average household size
 \item Housing: Dwellings, vacancy, ownership, rents, building types
@@ -30,6 +31,11 @@ The dataset includes:
 
 Municipality codes are 8-digit AGS codes. Since the census is a single
 2022 snapshot, there is no year dimension.
+
+The age variables follow the bins published in the Destatis Regionaltabellen.
+In particular, \code{share_50to59_census22} covers ages 50-59 and
+\code{share_60plus_census22} covers ages 60 and older. The source groups ages
+60-74 together, so it cannot support separate 50-64 and 65+ measures.
 }
 \examples{
 # Get the census data

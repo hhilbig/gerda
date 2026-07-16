@@ -1,0 +1,193 @@
+---
+title: "Using GERDA in Agent-Run Research Workflows"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using GERDA in Agent-Run Research Workflows}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(gerda)
+```
+
+This vignette is a fail-closed workflow for coding agents that use GERDA in a
+research project. It separates dataset selection, acquisition, schema checks,
+joins, and provenance so that an agent cannot silently continue after choosing
+the wrong dataset or losing observations.
+
+## Select from the structured catalog
+
+Do not guess a dataset name from a prose description. Query the catalog and
+require one result before downloading:
+
+```{r}
+catalog <- gerda_data_list(print_table = FALSE)
+
+candidates <- subset(
+  catalog,
+  election_type == "federal" &
+    geographic_level == "municipality" &
+    boundary == "2025"
+)
+
+candidates[, c(
+  "data_name", "year_start", "year_end", "boundary", "formats"
+)]
+stopifnot(nrow(candidates) == 1L)
+data_name <- candidates$data_name[[1]]
+```
+
+The boundary choice is part of the research design. `*_unharm` files use the
+geography in force at each election; `*_harm` files map observations to a
+common geography. A suffix such as `_21`, `_23`, or `_25` identifies the target
+boundary vintage. An agent should record why that vintage matches the analysis.
+
+## Download with errors enabled and save a project snapshot
+
+Use RDS for smaller downloads, make load failures fatal, and opt into caching
+when repeated runs are expected:
+
+```{r, eval = FALSE}
+elections <- load_gerda_web(
+  data_name,
+  file_format = "rds",
+  on_error = "stop",
+  cache = TRUE
+)
+
+stopifnot(is.data.frame(elections), nrow(elections) > 0L)
+```
+
+The cache improves speed but does not pin an immutable upstream version. For a
+reproducible project, save the data actually analyzed and its checksum inside
+the project, subject to the project's data-storage policy:
+
+```{r, eval = FALSE}
+dir.create("data/derived", recursive = TRUE, showWarnings = FALSE)
+snapshot_path <- file.path("data/derived", paste0(data_name, ".rds"))
+saveRDS(elections, snapshot_path)
+
+provenance <- list(
+  package = "gerda",
+  package_version = as.character(utils::packageVersion("gerda")),
+  dataset = data_name,
+  format = "rds",
+  retrieved_at_utc = format(Sys.time(), tz = "UTC", usetz = TRUE),
+  snapshot_path = snapshot_path,
+  snapshot_md5 = unname(tools::md5sum(snapshot_path))
+)
+saveRDS(provenance, "data/derived/gerda_provenance.rds")
+```
+
+`load_gerda_web()` reads final data artifacts from the
+[GERDA data repository](https://github.com/awiedem/german_election_data). Use
+that repository when an audit requires source files, cleaning scripts, or
+lineage below the package's final artifacts. Files named `*_raw` are the most
+source-near GERDA representation; they are not a substitute for inspecting the
+original source and build pipeline.
+
+## Validate the loaded schema before analysis
+
+Geographic identifiers must remain character vectors. Re-read the original
+source with explicit character column types if an identifier became numeric;
+padding a damaged numeric value later can conceal leading-zero loss.
+
+For the selected municipal panel, a minimal structural audit is:
+
+```{r, eval = FALSE}
+required <- c("ags", "election_year")
+stopifnot(all(required %in% names(elections)))
+
+if (!is.character(elections$ags) ||
+    any(!is.na(elections$ags) & !grepl("^[0-9]{8}$", elections$ags))) {
+  stop("ags must contain eight-digit character identifiers")
+}
+if (any(!stats::complete.cases(elections[required]))) {
+  stop("Missing geographic or time keys require investigation")
+}
+if (anyDuplicated(elections[required])) {
+  stop("ags + election_year is not unique; identify additional row keys")
+}
+
+expected_years <- sort(unique(elections$election_year))
+years_by_unit <- split(elections$election_year, elections$ags)
+units_with_gaps <- names(Filter(
+  function(x) !identical(sort(unique(x)), expected_years),
+  years_by_unit
+))
+```
+
+The correct row key varies by dataset. Candidate, election-round, party-long,
+and `stimme` files need additional key columns. Never resolve duplicate keys by
+calling `distinct()` unless the duplication has been explained. Inspect
+missingness in every analysis variable before filtering or estimation; do not
+silently drop rows with missing outcomes, treatments, identifiers, or years.
+
+## Use guarded joins and inspect their diagnostics
+
+The two enrichment helpers enforce a many-to-one left-join contract. They
+reject numeric or malformed geographic identifiers, duplicate reference keys,
+columns that would be overwritten, and any join that expands the input row
+count. Set `unmatched = "error"` in agent-run pipelines:
+
+```{r, eval = FALSE}
+enriched <- elections |>
+  add_gerda_covariates(unmatched = "error") |>
+  add_gerda_census(unmatched = "error")
+
+join_report <- gerda_join_diagnostics(enriched)
+print(join_report)
+
+stopifnot(
+  all(join_report$input_rows == join_report$output_rows),
+  all(join_report$unexpected_unmatched_rows == 0L)
+)
+saveRDS(join_report, "data/derived/gerda_join_diagnostics.rds")
+```
+
+For INKAR covariates, election years outside 1995–2022 are retained with
+missing joined values and reported as `outside_coverage_rows`; they are not
+treated as unexpected matches. `unmatched = "error"` still stops on valid-year
+keys that fail to match and on missing join keys in any year. The other modes
+are `"warn"` (the interactive default) and `"ignore"`. Capture diagnostics
+immediately after the join pipeline because unrelated data-frame transformations
+may remove custom attributes.
+
+A successful key match does not imply complete covariate values. Individual
+INKAR and Census variables can still be missing, so inspect payload missingness
+separately. Census values are a single 2022 snapshot and are time-invariant when
+attached to elections from other years. Exact identifier matches also do not by
+themselves establish that the election and covariate boundary vintages are
+substantively comparable.
+
+## Use bundled data and codebooks directly
+
+INKAR covariates and Census 2022 are bundled with the package and require no
+download. Their codebooks are machine-readable data frames:
+
+```{r}
+covariates <- gerda_covariates()
+covariate_codebook <- gerda_covariates_codebook()
+census <- gerda_census()
+census_codebook <- gerda_census_codebook()
+
+stopifnot(
+  !anyDuplicated(covariates[c("county_code", "year")]),
+  !anyDuplicated(census["ags"]),
+  all(names(covariates) %in% covariate_codebook$variable),
+  all(names(census) %in% census_codebook$variable)
+)
+```
+
+Before handing the project back, an agent should leave the exact dataset name
+and boundary rationale, package version, saved snapshot and checksum, complete
+row-key definition, missing-key and panel-gap checks, join diagnostics, variable
+missingness summary, and the GERDA citation returned by `citation("gerda")`.
