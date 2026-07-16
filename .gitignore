@@ -11,3 +11,10 @@ inst/doc
 *.tar.gz
 .Rhistory
 *.Rcheck/
+
+# Local-only development configuration
+/CLAUDE.md
+/AGENTS.md
+/.claude/
+/.agents/
+/.codex/
