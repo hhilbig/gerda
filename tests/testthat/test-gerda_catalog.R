@@ -4,7 +4,7 @@
 test_that("gerda_catalog() has the expected shape", {
     cat <- gerda_catalog()
     expect_s3_class(cat, "data.frame")
-    expect_equal(nrow(cat), 46)
+    expect_equal(nrow(cat), 47)
     expect_setequal(
         colnames(cat),
         c("data_name", "description", "path", "election_type",

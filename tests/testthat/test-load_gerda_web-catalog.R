@@ -37,7 +37,8 @@ catalog_datasets <- list(
     county = c(
         "county_elec_unharm",
         "county_elec_harm_21_cty",
-        "county_elec_harm_21_muni"
+        "county_elec_harm_21_muni",
+        "county_council_seats"
     ),
     european = c(
         "european_muni_unharm",

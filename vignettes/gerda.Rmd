@@ -124,6 +124,7 @@ If you are using `add_gerda_covariates()` or `add_gerda_census()`, you can skip 
 | `federal_cty_unharm` | `county_code` + deprecated `ags` alias | `election_year` + deprecated `year` alias |
 | `county_elec_*_cty` | `county_code` (5-digit county) | `election_year` |
 | `county_elec_unharm`, `county_elec_*_muni` | `ags` (8-digit municipality) | `election_year` |
+| `county_council_seats` | `county` (5-digit county) | `year` (yearly panel; seat vectors carried forward between elections) |
 | `ltw_wkr_unharm` | `state` + `wkr_nr` + `stimme` | `election_year`, `election_date` |
 | `ltw_wkr_unharm_long` | `state` + `wkr_nr` + `stimme` + `party` | `election_year`, `election_date` |
 | `federal_wkr_unharm` | `wkr_nr` + `stimme` | `election_year`, `election_date` |

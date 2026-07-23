@@ -54,17 +54,17 @@ gerda_catalog <- function() {
     rbind(
         # Local (municipal) elections
         ds("municipal_unharm",
-           "Local elections at the municipal level (1990-2020, unharmonized).",
+           "Local elections at the municipal level (1984-2026, unharmonized; includes council seat counts (seats_*) where the state source reports them).",
            "municipal_elections/final/municipal_unharm",
-           "municipal", "municipality", 1990, 2020, "unharmonized"),
+           "municipal", "municipality", 1984, 2026, "unharmonized"),
         ds("municipal_harm",
-           "Local elections at the municipal level (1990-2020, harmonized).",
+           "Local elections at the municipal level (1990-2026, harmonized).",
            "municipal_elections/final/municipal_harm",
-           "municipal", "municipality", 1990, 2020, "harmonized"),
+           "municipal", "municipality", 1990, 2026, "harmonized"),
         ds("municipal_harm_25",
-           "Local elections at the municipal level, harmonized to 2025 boundaries.",
+           "Local elections at the municipal level (1990-2026, harmonized to 2025 boundaries).",
            "municipal_elections/final/municipal_harm_25",
-           "municipal", "municipality", NA, NA, "2025"),
+           "municipal", "municipality", 1990, 2026, "2025"),
 
         # State (Landtag) elections
         ds("state_unharm",
@@ -147,6 +147,10 @@ gerda_catalog <- function() {
            "County (Kreistag) elections at the municipal level, harmonized to 2021 boundaries.",
            "county_elections/final/county_elec_harm_21_muni",
            "county-kreistag", "municipality", NA, NA, "2021"),
+        ds("county_council_seats",
+           "County council (Kreistag) seat composition, yearly panel on fixed current county boundaries (2008-2025).",
+           "county_elections/final/county_council_seats",
+           "county-kreistag", "county", 2008, 2025, "current"),
 
         # European Parliament elections
         ds("european_muni_unharm",

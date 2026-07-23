@@ -1,12 +1,12 @@
 # GERDA: German Election Data for R
 
-This R package provides data on German elections since 1945, together with helpers for merging socioeconomic covariates. As of v0.7.1, its downloadable catalog contains 46 datasets covering:
+This R package provides data on German elections since 1945, together with helpers for merging socioeconomic covariates. Its downloadable catalog contains 47 datasets covering:
 
 - federal elections at the municipality and county level (1953–2025)
 - federal elections at the constituency (Wahlkreis) level (2002–2025), plus a 2021→2025 constituency crosswalk
 - state (Landtag) elections at the municipality and constituency (Wahlkreis) levels
-- local (municipal) elections, unharmonized and harmonized to 2025 boundaries
-- county (Kreistag) elections
+- local (municipal) elections (1984–2026), unharmonized and harmonized; the unharmonized file includes council seat counts
+- county (Kreistag) elections, plus a county council seat composition panel (2008–2025)
 - European Parliament elections at the municipal level
 - mayoral elections: results, candidates, and person- and municipality-level panels
 - Landrat (county executive) elections: results and candidate-level data

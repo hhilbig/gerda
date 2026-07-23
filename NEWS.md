@@ -1,5 +1,11 @@
 # gerda (development version)
 
+## New Data
+
+* Added `county_council_seats` to the catalog (46 → 47 datasets): a yearly panel of county council (Kreistag) seat composition, 400 counties × 18 years (2008–2025), on a fixed set of current county boundaries. Seat vectors are carried forward between elections; reform-created counties are missing before they existed.
+* `municipal_unharm` now includes ten council seat count columns (`seats_cdu_csu`, `seats_spd`, `seats_linke_pds`, `seats_gruene`, `seats_afd`, `seats_piraten`, `seats_fdp`, `seats_die_partei`, `seats_freie_wahler`, `seats_bsw`) where the state source reports them. Seats are deliberately absent from the harmonized municipal files: seat counts cannot be meaningfully summed across merged municipalities.
+* Corrected stale catalog year ranges for the municipal family: `municipal_unharm` covers 1984–2026 and `municipal_harm` / `municipal_harm_25` cover 1990–2026 (previously listed as 1990–2020).
+
 ## Breaking Changes
 
 * Corrected two misleading Census 2022 variable names to match the source bins: `share_50to64_census22` is now `share_50to59_census22`, and `share_65plus_census22` is now `share_60plus_census22`. Destatis publishes a combined age 60-74 bin, so true 50-64 and 65+ measures cannot be recovered from these tables.
