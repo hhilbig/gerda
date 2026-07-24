@@ -121,7 +121,7 @@ If you are using `add_gerda_covariates()` or `add_gerda_census()`, you can skip 
 | `landrat_unharm` | `ags` (8-digit county AGS ending in `000`); `round` distinguishes election rounds | `election_year`, `election_date` |
 | `landrat_candidates` | `ags` (8-digit county AGS ending in `000`) + candidate | `election_year`, `election_date`, `election_date_sw` |
 | `federal_cty_harm` | `county_code` (5-digit county) | `election_year` |
-| `federal_cty_unharm` | `county_code` + deprecated `ags` alias | `election_year` + deprecated `year` alias |
+| `federal_cty_unharm` | `county_code` (renamed from upstream `ags` on load) | `election_year` (renamed from upstream `year` on load) |
 | `county_elec_*_cty` | `county_code` (5-digit county) | `election_year` |
 | `county_elec_unharm`, `county_elec_*_muni` | `ags` (8-digit municipality) | `election_year` |
 | `county_council_seats` | `county` (5-digit county) | `year` (yearly panel; seat vectors carried forward between elections) |

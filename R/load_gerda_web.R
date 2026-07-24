@@ -281,26 +281,24 @@ load_gerda_web <- function(file_name,
     # Normalize schema for known upstream inconsistencies.
     # federal_cty_unharm ships with 'ags' (a 5-digit county code) and 'year',
     # while all other county-level datasets use 'county_code' and 'election_year'.
-    # To keep downstream helpers like add_gerda_covariates() working without
-    # breaking existing user code, add 'county_code'/'election_year' as aliases
-    # alongside the original columns. The 'ags' and 'year' aliases are
-    # deprecated and scheduled for removal in v0.8.
+    # Since v0.8 the upstream columns are renamed on load; the deprecated
+    # 'ags'/'year' duplicates (announced for removal in 0.6.0) are gone.
     if (!is.null(data) && file_name == "federal_cty_unharm") {
-        added_alias <- FALSE
+        renamed <- FALSE
         if ("ags" %in% names(data) && !"county_code" %in% names(data)) {
-            data$county_code <- data$ags
-            added_alias <- TRUE
+            names(data)[names(data) == "ags"] <- "county_code"
+            renamed <- TRUE
         }
         if ("year" %in% names(data) && !"election_year" %in% names(data)) {
-            data$election_year <- data$year
-            added_alias <- TRUE
+            names(data)[names(data) == "year"] <- "election_year"
+            renamed <- TRUE
         }
-        if (added_alias) {
+        if (renamed) {
             message(
-                "Note: 'federal_cty_unharm' now also provides 'county_code' and 'election_year' ",
-                "to match other county-level datasets. The upstream 'ags' and 'year' columns ",
-                "remain for backwards compatibility but are deprecated and will be removed in v0.8. ",
-                "Please migrate your code to the new column names."
+                "Note: the upstream 'ags' and 'year' columns of 'federal_cty_unharm' are ",
+                "provided as 'county_code' and 'election_year' to match the other ",
+                "county-level datasets. The deprecated 'ags'/'year' duplicates were ",
+                "removed in v0.8."
             )
         }
     }

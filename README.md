@@ -119,4 +119,4 @@ Indicators cover population and age structure (under 18, 18–29, 30–49, 50–
 
 ## Deprecations
 
-As of v0.6, `federal_cty_unharm` exposes both the upstream columns (`ags`, `year`) and the canonical GERDA county-level names (`county_code`, `election_year`). The `ags` and `year` aliases will be removed in v0.8. New code should use `county_code` and `election_year`, which match the rest of the county-level datasets and work directly with `add_gerda_covariates()`.
+As of v0.8, the upstream `federal_cty_unharm` columns `ags` and `year` are renamed to the canonical GERDA county-level names `county_code` and `election_year` on load (the deprecated `ags`/`year` duplicates announced in v0.6 have been removed). Use `county_code` and `election_year`, which match the rest of the county-level datasets and work directly with `add_gerda_covariates()`.
