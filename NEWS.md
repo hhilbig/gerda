@@ -1,4 +1,4 @@
-# gerda (development version)
+# gerda 0.8.0
 
 ## New Data
 
@@ -8,6 +8,7 @@
 
 ## Breaking Changes
 
+* `load_gerda_web("federal_cty_unharm")` now renames the upstream `ags` and `year` columns to `county_code` and `election_year` on load and no longer keeps the deprecated duplicates. This completes the removal announced in 0.6.0 (and deferred once in 0.7.0); a one-time message on load points existing code to the new names.
 * Corrected two misleading Census 2022 variable names to match the source bins: `share_50to64_census22` is now `share_50to59_census22`, and `share_65plus_census22` is now `share_60plus_census22`. Destatis publishes a combined age 60-74 bin, so true 50-64 and 65+ measures cannot be recovered from these tables.
 * `add_gerda_covariates()` and `add_gerda_census()` now reject numeric or malformed geographic identifiers. County codes must be five-digit character strings and municipality AGS codes must be eight-digit character strings; this prevents joins after leading zeros have been lost. The helpers also reject destination-column conflicts instead of creating ambiguous suffixes.
 
