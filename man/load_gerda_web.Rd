@@ -52,14 +52,18 @@ turnout and invalid-vote columns.
 }
 
 \examples{
-\donttest{
+# These examples download datasets from GitHub (up to ~125 MB each) and are
+# therefore not run automatically.
+\dontrun{
 # Load harmonized municipal elections data
 data_municipal_harm <- load_gerda_web("municipal_harm", verbose = TRUE, file_format = "rds")
 
 # Load federal election data harmonized to 2025 boundaries (includes 2025 election)
 data_federal_2025 <- load_gerda_web("federal_muni_harm_25", verbose = TRUE, file_format = "rds")
 
-# Cache the download so repeated calls in the same project reuse it
+# Cache the download so repeated calls in the same project reuse it. Caching
+# is opt-in because it writes to gerda_cache_dir() outside the session's
+# temporary directory.
 data_federal_2025 <- load_gerda_web("federal_muni_harm_25", cache = TRUE)
 }
 

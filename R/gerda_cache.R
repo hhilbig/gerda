@@ -134,7 +134,8 @@ gerda_cache_dir <- function() {
 #' @return Invisibly, a character vector of the removed file paths.
 #' @seealso [gerda_cache_dir()], [load_gerda_web()]
 #' @examples
-#' \donttest{
+#' # Not run: this deletes files from the user's cache directory.
+#' \dontrun{
 #' clear_gerda_cache()
 #' }
 #' @export

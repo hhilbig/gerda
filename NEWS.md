@@ -1,3 +1,12 @@
+# gerda 0.8.1
+
+## CRAN Policy Compliance
+
+* Examples that call `load_gerda_web()` are now wrapped in `\dontrun{}` rather than `\donttest{}`. Under `\donttest{}` these examples ran on the CRAN check machines, where one of them passed `cache = TRUE` and wrote a 125 MB dataset into the user cache directory returned by `gerda_cache_dir()`. Package checks now make no network requests and write nothing outside the session's temporary directory.
+* The `clear_gerda_cache()` example is likewise `\dontrun{}`, since running it deletes files from the user's cache directory.
+
+No user-facing behaviour changed in this release; `load_gerda_web()`, caching, and all data remain as in 0.8.0.
+
 # gerda 0.8.0
 
 ## New Data

@@ -1,44 +1,57 @@
-# cran-comments.md — gerda 0.8.0
+# cran-comments.md — gerda 0.8.1
 
 ## Purpose of this release
 
-This release follows 0.7.1 (accepted 2026-07-15) sooner than the usual update
-cadence because the CRAN version ships two **mislabeled variables**: the
-bundled Census 2022 columns `share_50to64_census22` and `share_65plus_census22`
-actually contain the source's age 50-59 and 60+ bins (Destatis publishes a
-combined 60-74 bin, so true 50-64 and 65+ shares cannot be constructed). Users
-relying on the current names get silently wrong demographic controls; we would
-prefer not to leave that on CRAN for a full release cycle. The corrected names
-are `share_50to59_census22` and `share_60plus_census22`.
+This release fixes the issue reported by Prof Ripley on 2026-07-27 and the
+associated NOTE in the `--run-donttest` additional check for 0.8.0:
 
-Main changes (see `NEWS.md` for the full list):
+```
+* checking for new files in some other directories ... NOTE
+Found the following files/directories:
+  '~/.cache/R/gerda' '~/.cache/R/gerda/federal_muni_harm_25.rds'
+```
 
-- **Corrected Census 2022 variable names** (breaking, see above).
-- **Completed a long-announced removal.** `load_gerda_web("federal_cty_unharm")`
-  now renames the upstream `ags`/`year` columns to `county_code`/`election_year`
-  on load; the deprecated duplicate columns (removal announced in 0.6.0,
-  deferred in 0.7.0, with a per-load deprecation message since) are gone. A
-  one-time message on load points existing code to the new names.
-- **Safer enrichment joins.** `add_gerda_covariates()` and `add_gerda_census()`
-  now reject numeric or malformed geographic identifiers (guarding against
-  dropped leading zeros), gain an `unmatched = "warn"/"error"/"ignore"`
-  argument with exact unmatched-row/unit reporting, and verify reference-key
-  uniqueness and output row counts. New helper `gerda_join_diagnostics()`
-  returns machine-readable join reports.
-- **New data** (catalog grows from 46 to 47): `county_council_seats`, a yearly
-  county-level panel of council seat composition (2008-2025), and ten
-  council-seat columns in `municipal_unharm`.
+The cause was a `\donttest{}` example for `load_gerda_web()` that passed
+`cache = TRUE`. Caching is opt-in and off by default, but the example opted in
+on the check machine and wrote a 125 MB dataset to the user cache directory.
+
+All examples that call `load_gerda_web()` are now `\dontrun{}`, as is the
+`clear_gerda_cache()` example (running it would delete files from a user's
+cache). Vignette chunks that download data were already `eval = FALSE` and the
+download tests were already guarded with `skip_on_cran()`.
+
+The result is that checking this package makes **no network requests** and
+writes **nothing outside the session's temporary directory**.
+
+`\dontrun{}` is used here rather than `\donttest{}` deliberately: these examples
+cannot run without internet access, and executing them transfers up to 125 MB
+per dataset from GitHub. There is no smaller variant that still demonstrates the
+function meaningfully.
+
+No user-facing behaviour changed in this release.
 
 ## Test environments
 
 - Local: macOS 15.x (arm64), R 4.5.2 — `R CMD check --as-cran`: 0 errors,
   0 warnings, 0 notes.
+- Local: `R CMD check --as-cran --run-donttest` — 0 errors, 0 warnings,
+  0 notes; no files created outside `tempdir()`.
 - win-builder (R-devel): tarball uploaded via
   <https://win-builder.r-project.org/upload.aspx> before the formal submission.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes.
+0 errors | 0 warnings | 1 note.
+
+The note is from `checking CRAN incoming feasibility`:
+
+```
+Days since last update: 3
+```
+
+0.8.0 was published on 2026-07-24. This submission arrives quickly because it
+responds to the CRAN request of 2026-07-27 with a deadline of 2026-08-21. It
+changes documentation only; no R code was modified.
 
 ## Network-dependent tests and examples
 
@@ -46,12 +59,13 @@ Tests that exercise `load_gerda_web()` download datasets from GitHub
 (<https://github.com/awiedem/german_election_data>) and are guarded with
 `skip_on_cran()`, so CRAN check farms do not hit the network.
 Parameter-validation, fuzzy-matching, catalog-structure, cache-helper, join
-diagnostic, and party-crosswalk tests run on CRAN. Examples that call
-`load_gerda_web()` are wrapped in `\donttest{}` or `\dontrun{}`.
+diagnostic, and party-crosswalk tests run on CRAN and use a temporary
+`R_USER_CACHE_DIR`. Every example that calls `load_gerda_web()` is wrapped in
+`\dontrun{}`.
 
 ## Reverse dependencies
 
-No reverse dependencies on CRAN. Confirmed on 2026-07-24:
+No reverse dependencies on CRAN. Confirmed on 2026-07-27:
 
 ```r
 tools::package_dependencies("gerda", reverse = TRUE,

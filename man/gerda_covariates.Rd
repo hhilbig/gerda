@@ -49,8 +49,9 @@ covs <- gerda_covariates()
 head(covs)
 summary(covs)
 
-\donttest{
-# Manual merge (advanced) — downloads election data from GitHub
+# Not run: downloads election data from GitHub.
+\dontrun{
+# Manual merge (advanced)
 library(dplyr)
 elections <- load_gerda_web("federal_cty_harm")
 merged <- elections \%>\%

@@ -20,7 +20,8 @@ to force fresh downloads, or pass \verb{cache = TRUE, refresh = TRUE} to
 \code{\link[=load_gerda_web]{load_gerda_web()}} for a one-off refresh.
 }
 \examples{
-\donttest{
+# Not run: this deletes files from the user's cache directory.
+\dontrun{
 clear_gerda_cache()
 }
 }
