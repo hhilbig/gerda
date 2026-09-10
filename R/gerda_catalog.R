@@ -88,13 +88,13 @@ gerda_catalog <- function() {
            "state_elections/final/state_harm_25",
            "state", "municipality", NA, NA, "2025"),
         ds("ltw_wkr_unharm",
-           "State (Landtag) elections at the Wahlkreis (constituency) level (1990-2026, unharmonized).",
+           "State (Landtag) elections at the Wahlkreis (constituency) level (1980-2026, unharmonized).",
            "state_elections/final/ltw_wkr_unharm",
-           "state", "wahlkreis", 1990, 2026, "unharmonized"),
+           "state", "wahlkreis", 1980, 2026, "unharmonized"),
         ds("ltw_wkr_unharm_long",
-           "State (Landtag) elections at the Wahlkreis level (1990-2026), long format with vote counts.",
+           "State (Landtag) elections at the Wahlkreis level (1980-2026), long format with vote counts.",
            "state_elections/final/ltw_wkr_unharm_long",
-           "state", "wahlkreis", 1990, 2026, "unharmonized"),
+           "state", "wahlkreis", 1980, 2026, "unharmonized"),
 
         # Federal elections
         ds("federal_muni_raw",

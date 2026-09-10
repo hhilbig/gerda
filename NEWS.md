@@ -1,3 +1,7 @@
+# gerda 0.8.1.9000 (development)
+
+* Corrected the catalog year range for `ltw_wkr_unharm` and `ltw_wkr_unharm_long` to 1980-2026. The upstream data added 28 historical state elections at the Wahlkreis level in August 2026 (Saarland from 1980; most states from the 1990s or 2000s); the data itself is unchanged by this package update.
+
 # gerda 0.8.1
 
 ## CRAN Policy Compliance
