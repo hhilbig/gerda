@@ -3,6 +3,9 @@
 * Clarified the documented share denominators, missing values, multi-vote units,
   constituency ballot selection and federal 2021 result versions. Party sums
   must exclude overlapping derived columns such as `cdu_csu` and all metadata.
+  State harmonization can impute `valid_votes` weights (including Bremen
+  1991/1995), so multiplying shares by them yields proxy counts; integer
+  rounding can also slightly change source percentages.
   This documentation update does not change loader behavior or bundled data.
 
 # gerda 0.8.1
