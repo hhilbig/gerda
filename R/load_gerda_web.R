@@ -13,14 +13,35 @@
 #'
 #' @section Vote-share columns:
 #' Election datasets expose one column per party (e.g. `cdu`, `spd`, `gruene`, `afd`).
-#' These columns hold the party's share of valid votes and are expressed as
-#' fractions of 1. They do **not** sum to 1 across the named major parties:
-#' the remainder is held by smaller parties with their own columns and, at
-#' the tail, an `other` category. For example, in `federal_cty_harm` for 2021,
-#' `cdu + csu + spd + gruene + fdp + linke_pds + afd` is typically around
-#' 0.91 and ranges roughly 0.78 to 0.97 across counties. To reconstruct a
-#' full 1.0 share, include every party column or use `other` together with
-#' turnout and invalid-vote columns.
+#' Shares are fractions of 1. Federal county and municipality share files use
+#' `number_voters` as denominator; constituency and state-election share files
+#' use `valid_votes`. Reconstruct counts using the denominator for that file.
+#' Named major parties do not exhaust the ballot. Include individual smaller
+#' parties and `other` where appropriate, but exclude overlapping derived
+#' columns (`cdu_csu`, `far_right`, `far_left`, `far_left_w_linke`), flags,
+#' turnout, participation counts and covariates from party-share sums.
+#' Federal county/municipality shares need not sum to 1 because their denominator
+#' includes voters casting invalid votes. Party aliases can differ across files.
+#'
+#' @section Missingness and vote units:
+#' Missing source values remain `NA`; they are not zero. A sum with
+#' `na.rm = TRUE` returns zero for an entirely missing vector, so check the
+#' number of observed values before interpreting aggregates. Partial counts
+#' do not supply statewide turnout. Bayern state municipality results use
+#' Gesamtstimmen (first plus second votes from 1950); Hamburg and Bremen use
+#' multi-vote totals where applicable. Turnout always counts people.
+#'
+#' @section Ballots and result versions:
+#' In wide constituency data, select `stimme` in `c("zweitstimme", "einzelstimme")`
+#' for party/list results and verify one row per state, election/date and
+#' constituency before summing participation. Long files repeat participation
+#' across parties. Keep constituency identifiers as strings (e.g. Berlin `01-01`).
+#' Municipality `state_unharm` has no `stimme` column.
+#' Federal 2021 county results retain the original certified result; constituency
+#' results incorporate the February 2024 Berlin repeat election. Denominator
+#' conversion and boundary harmonization do not align those result versions.
+#' See the upstream codebook and \url{https://www.german-elections.com/usage-notes/}
+#' for coverage, source limitations and the state-election column schema.
 #'
 #' @return A tibble containing the loaded data, or NULL if the data could not be loaded.
 #'

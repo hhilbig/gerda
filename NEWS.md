@@ -1,3 +1,10 @@
+# gerda (development)
+
+* Clarified the documented share denominators, missing values, multi-vote units,
+  constituency ballot selection and federal 2021 result versions. Party sums
+  must exclude overlapping derived columns such as `cdu_csu` and all metadata.
+  This documentation update does not change loader behavior or bundled data.
+
 # gerda 0.8.1
 
 ## CRAN Policy Compliance
