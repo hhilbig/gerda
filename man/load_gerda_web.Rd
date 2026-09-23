@@ -43,7 +43,11 @@ This function loads GERDA data from a web source.
 Election datasets expose one column per party (e.g. \code{cdu}, \code{spd}, \code{gruene}, \code{afd}).
 Shares are fractions of 1. Federal county and municipality share files use
 \code{number_voters} as denominator; constituency and state-election share files
-use \code{valid_votes}. Reconstruct counts using the denominator for that file.
+use \code{valid_votes}. Multiplication by an imputed denominator yields proxy
+counts. State harmonization fills missing \code{valid_votes} with
+positive voters, then positive electorate, then a unit weight. For Bremen
+1991/1995, multiplication therefore gives proxy counts, not observed votes.
+Harmonized counts are rounded to integers, which can slightly change shares.
 Named major parties do not exhaust the ballot. Include individual smaller
 parties and \code{other} where appropriate, but exclude overlapping derived
 columns (\code{cdu_csu}, \code{far_right}, \code{far_left}, \code{far_left_w_linke}), flags,

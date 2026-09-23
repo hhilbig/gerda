@@ -15,7 +15,11 @@
 #' Election datasets expose one column per party (e.g. `cdu`, `spd`, `gruene`, `afd`).
 #' Shares are fractions of 1. Federal county and municipality share files use
 #' `number_voters` as denominator; constituency and state-election share files
-#' use `valid_votes`. Reconstruct counts using the denominator for that file.
+#' use `valid_votes`. Multiplication by an imputed denominator yields proxy
+#' counts. State harmonization fills missing `valid_votes` with
+#' positive voters, then positive electorate, then a unit weight. For Bremen
+#' 1991/1995, multiplication therefore gives proxy counts, not observed votes.
+#' Harmonized counts are rounded to integers, which can slightly change shares.
 #' Named major parties do not exhaust the ballot. Include individual smaller
 #' parties and `other` where appropriate, but exclude overlapping derived
 #' columns (`cdu_csu`, `far_right`, `far_left`, `far_left_w_linke`), flags,
